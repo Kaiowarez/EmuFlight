@@ -166,10 +166,13 @@ typedef struct cliArrayLengthConfig_s {
 } cliArrayLengthConfig_t;
 
 typedef union {
-    cliLookupTableConfig_t lookup;
-    cliMinMaxConfig_t minmax;
-    cliArrayLengthConfig_t array;
-    uint8_t bitpos;
+    cliLookupTableConfig_t lookup;            // used for MODE_LOOKUP excl. VAR_UINT32
+    cliMinMaxConfig_t minmax;                 // used for MODE_DIRECT with signed parameters
+    cliMinMaxUnsignedConfig_t minmaxUnsigned; // used for MODE_DIRECT with unsigned parameters
+    cliArrayLengthConfig_t array;             // used for MODE_ARRAY
+    cliStringLengthConfig_t string;           // used for MODE_STRING
+    uint8_t bitpos;                           // used for MODE_BITSET
+    uint32_t u32Max;                          // used for MODE_DIRECT with VAR_UINT32
 } cliValueConfig_t;
 
 typedef struct clivalue_s {
