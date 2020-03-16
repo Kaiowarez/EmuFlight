@@ -132,6 +132,8 @@ typedef enum {
     OSD_PID_PROFILE_NAME,
     OSD_PROFILE_NAME,
     OSD_RSSI_DBM_VALUE,
+    OSD_CRSF_TXPOWER,
+    OSD_CRSF_LQ,
     OSD_ITEM_COUNT // MUST BE LAST
 } osd_items_e;
 

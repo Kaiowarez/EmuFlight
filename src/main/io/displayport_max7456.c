@@ -33,7 +33,7 @@
 #include "fc/config.h"
 
 #include "io/displayport_max7456.h"
-#include "io/osd.h"
+#include "osd/osd.h"
 
 #include "pg/max7456.h"
 #include "pg/pg.h"

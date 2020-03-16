@@ -72,7 +72,7 @@
 #include "io/dashboard.h"
 #include "io/gps.h"
 #include "io/ledstrip.h"
-#include "io/osd.h"
+#include "osd/osd.h"
 #include "io/piniobox.h"
 #include "io/serial.h"
 #include "io/transponder_ir.h"

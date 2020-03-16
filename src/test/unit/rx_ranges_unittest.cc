@@ -189,11 +189,11 @@ bool rxMspInit(rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig, rcReadR
     return true;
 }
 
-bool feature(uint32_t) {
+bool featureIsEnabled(uint32_t) {
     return false;
 }
 
-void featureClear(uint32_t) {
+void featureDisable(uint32_t) {
 }
 
 bool rxMspFrameComplete(void)
@@ -221,6 +221,26 @@ void failsafeOnValidDataReceived(void)
 
 void failsafeOnValidDataFailed(void)
 {
+}
+
+float pt1FilterGain(float f_cut, float dT)
+{
+    UNUSED(f_cut);
+    UNUSED(dT);
+    return 0.0;
+}
+
+void pt1FilterInit(pt1Filter_t *filter, float k)
+{
+    UNUSED(filter);
+    UNUSED(k);
+}
+
+float pt1FilterApply(pt1Filter_t *filter, float input)
+{
+    UNUSED(filter);
+    UNUSED(input);
+    return 0.0;
 }
 
 }

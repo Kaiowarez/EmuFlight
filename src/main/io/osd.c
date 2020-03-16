@@ -78,7 +78,7 @@
 #include "io/beeper.h"
 #include "io/flashfs.h"
 #include "io/gps.h"
-#include "io/osd.h"
+#include "osd/osd.h"
 #include "io/vtx_string.h"
 #include "io/vtx.h"
 

@@ -54,7 +54,7 @@
 #include "pg/piniobox.h"
 
 #include "io/serial.h"
-#include "io/osd.h"
+#include "osd/osd.h"
 #include "io/vtx.h"
 #include "io/ledstrip.h"
 

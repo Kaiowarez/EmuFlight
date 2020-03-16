@@ -78,6 +78,8 @@ TEST(RxTest, TestValidFlightChannels)
     modeActivationConditionsMutable(0)->range.startStep = CHANNEL_VALUE_TO_STEP(CHANNEL_RANGE_MIN);
     modeActivationConditionsMutable(0)->range.endStep = CHANNEL_VALUE_TO_STEP(1600);
 
+    analyzeModeActivationConditions();
+
     // when
     rxInit();
 
@@ -113,6 +115,8 @@ TEST(RxTest, TestValidFlightChannelsHighArm)
     modeActivationConditionsMutable(0)->range.startStep = CHANNEL_VALUE_TO_STEP(1400);
     modeActivationConditionsMutable(0)->range.endStep = CHANNEL_VALUE_TO_STEP(CHANNEL_RANGE_MAX);
 
+    analyzeModeActivationConditions();
+
     // when
     rxInit();
 
@@ -146,6 +150,8 @@ TEST(RxTest, TestInvalidFlightChannels)
     modeActivationConditionsMutable(0)->modeId = BOXARM;
     modeActivationConditionsMutable(0)->range.startStep = CHANNEL_VALUE_TO_STEP(1400);
     modeActivationConditionsMutable(0)->range.endStep = CHANNEL_VALUE_TO_STEP(CHANNEL_RANGE_MAX);
+
+    analyzeModeActivationConditions();
 
     // and
     uint16_t channelPulses[MAX_SUPPORTED_RC_CHANNEL_COUNT];
@@ -229,4 +235,23 @@ extern "C" {
     void xBusInit(const rxConfig_t *, rxRuntimeConfig_t *) {}
     void rxMspInit(const rxConfig_t *, rxRuntimeConfig_t *) {}
     void rxPwmInit(const rxConfig_t *, rxRuntimeConfig_t *) {}
+    float pt1FilterGain(float f_cut, float dT)
+    {
+        UNUSED(f_cut);
+        UNUSED(dT);
+        return 0.0;
+    }
+
+    void pt1FilterInit(pt1Filter_t *filter, float k)
+    {
+        UNUSED(filter);
+        UNUSED(k);
+    }
+
+    float pt1FilterApply(pt1Filter_t *filter, float input)
+    {
+        UNUSED(filter);
+        UNUSED(input);
+        return 0.0;
+    }
 }

@@ -29,7 +29,7 @@
 #include "sensors/barometer.h"
 #include "sensors/compass.h"
 
-#include "io/osd.h"
+#include "osd/osd.h"
 
 #define VBAT_SCALE       113
 
