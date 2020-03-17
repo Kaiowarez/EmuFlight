@@ -443,8 +443,8 @@ static void getMinMax(const clivalue_t *var, int *min, int *max)
     switch (var->type & VALUE_TYPE_MASK) {
     case VAR_UINT8:
     case VAR_UINT16:
-        *min = var->config.minmaxUnsigned.min;
-        *max = var->config.minmaxUnsigned.max;
+        *min = var->config.minmax.min;
+        *max = var->config.minmax.max;
 
         break;
     default:
@@ -784,7 +784,7 @@ static void cliPrintVarRange(const clivalue_t *var)
             break;
         case VAR_UINT8:
         case VAR_UINT16:
-            cliPrintLinef("Allowed range: %d - %d", var->config.minmaxUnsigned.min, var->config.minmaxUnsigned.max);
+            cliPrintLinef("Allowed range: %d - %d", var->config.minmax.min, var->config.minmax.max);
 
             break;
         default:
