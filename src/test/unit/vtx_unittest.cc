@@ -27,7 +27,7 @@ extern "C" {
     #include "pg/rx.h"
     #include "fc/config.h"
     #include "fc/controlrate_profile.h"
-    #include "fc/core.h"
+    #include "fc/fc_core.h"
     #include "fc/rc_controls.h"
     #include "fc/rc_modes.h"
     #include "fc/runtime_config.h"
@@ -89,8 +89,6 @@ TEST(VtxTest, PitMode)
     modeActivationConditionsMutable(0)->range.startStep = CHANNEL_VALUE_TO_STEP(1750);
     modeActivationConditionsMutable(0)->range.endStep = CHANNEL_VALUE_TO_STEP(CHANNEL_RANGE_MAX);
 
-    analyzeModeActivationConditions();
-
     // and
     vtxSettingsConfigMutable()->band = 0;
     vtxSettingsConfigMutable()->freq = 5800;
@@ -117,7 +115,7 @@ extern "C" {
     uint32_t millis(void) { return micros() / 1000; }
     bool rxIsReceivingSignal(void) { return simulationHaveRx; }
 
-    bool featureIsEnabled(uint32_t f) { return simulationFeatureFlags & f; }
+    bool feature(uint32_t f) { return simulationFeatureFlags & f; }
     void warningLedFlash(void) {}
     void warningLedDisable(void) {}
     void warningLedUpdate(void) {}
@@ -133,7 +131,7 @@ extern "C" {
     bool isGyroCalibrationComplete(void) { return gyroCalibDone; }
     void gyroStartCalibration(bool) {}
     bool isFirstArmingGyroCalibrationRunning(void) { return false; }
-    void pidController(const pidProfile_t *, timeUs_t) {}
+    void pidController(const pidProfile_t *, const rollAndPitchTrims_t *, timeUs_t) {}
     void pidStabilisationState(pidStabilisationState_e) {}
     void mixTable(timeUs_t , uint8_t) {};
     void writeMotors(void) {};
@@ -147,7 +145,7 @@ extern "C" {
     void failsafeStartMonitoring(void) {}
     void failsafeUpdateState(void) {}
     bool failsafeIsActive(void) { return false; }
-    void pidResetIterm(void) {}
+    void pidResetITerm(void) {}
     void updateAdjustmentStates(void) {}
     void processRcAdjustments(controlRateConfig_t *) {}
     void updateGpsWaypointsAndMode(void) {}
@@ -164,7 +162,7 @@ extern "C" {
     void blackboxUpdate(timeUs_t) {}
     void transponderUpdate(timeUs_t) {}
     void GPS_reset_home_position(void) {}
-    void accStartCalibration(void) {}
+    void accSetCalibrationCycles(uint16_t) {}
     void baroSetCalibrationCycles(uint16_t) {}
     void changePidProfile(uint8_t) {}
     void changeControlRateProfile(uint8_t) {}
@@ -175,7 +173,4 @@ extern "C" {
     bool usbCableIsInserted(void) { return false; }
     bool usbVcpIsConnected(void) { return false; }
     void pidSetAntiGravityState(bool newState) { UNUSED(newState); }
-    void osdSuppressStats(bool) {}
-    void pidSetItermReset(bool) {}
-    void applyAccelerometerTrimsDelta(rollAndPitchTrims_t*) {}
 }

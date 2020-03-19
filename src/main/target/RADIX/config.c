@@ -27,7 +27,7 @@
 #include "flight/pid.h"
 #include "sensors/gyro.h"
 #include "blackbox/blackbox.h"
-#include "osd/osd.h"
+#include "io/osd.h"
 
 void targetConfiguration(void)
 {

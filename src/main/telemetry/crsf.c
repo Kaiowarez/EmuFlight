@@ -51,7 +51,7 @@
 #include "flight/imu.h"
 #include "flight/position.h"
 
-#include "interface/crsf_protocol.h"
+#include "rx/crsf_protocol.h"
 
 #include "io/displayport_crsf.h"
 #include "io/gps.h"

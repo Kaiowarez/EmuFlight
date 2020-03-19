@@ -76,12 +76,11 @@
 #include "io/ledstrip.h"
 #include "io/serial.h"
 #include "io/beeper.h"
-#include "osd/osd.h"
+#include "io/osd.h"
 
 #include "telemetry/telemetry.h"
 
 #include "flight/mixer.h"
-#include "flight/position.h"
 #include "flight/failsafe.h"
 #include "flight/imu.h"
 
@@ -96,6 +95,7 @@
 #include "fc/runtime_config.h"
 #include "fc/rc_modes.h"
 
+
 #include "cms/cms.h"
 
 #include "rx/crsf.h"
@@ -105,9 +105,9 @@
 
 #if defined(USE_BRAINFPV_OSD) | 1
 
-PG_REGISTER_WITH_RESET_TEMPLATE(osdConfig_t, osdConfig, PG_BRAINFPV_CONFIG, 0);
+PG_REGISTER_WITH_RESET_TEMPLATE(bfOsdConfig_t, bfOsdConfig, PG_BRAINFPV_CONFIG, 0);
 
-PG_RESET_TEMPLATE(osdConfig_t, osdConfig,
+PG_RESET_TEMPLATE(bfOsdConfig_t, bfOsdConfig,
   .sync_threshold = BRAINFPV_OSD_SYNC_TH_DEFAULT,
   .white_level    = 110,
   .black_level    = 20,
@@ -151,25 +151,24 @@ extern binary_semaphore_t onScreenDisplaySemaphore;
 extern uint8_t *draw_buffer;
 extern uint8_t *disp_buffer;
 
-extern bool blinkState;
 extern bool cmsInMenu;
+bool osd_arming_or_stats = false;
 extern bool osdStatsVisible;
 bool osdArming = false;
 
 extern crsfLinkInfo_t crsf_link_info;
-bool brainfpv_show_crsf_link_info;
+static bool show_crsf_link_info;
 
 bool brainfpv_user_avatar_set = false;
 bool brainfpv_hd_frame_menu = false;
-extern osdConfig_t osdConfigCms;
+extern bfOsdConfig_t bfOsdConfigCms;
 
 static void simple_artificial_horizon(int16_t roll, int16_t pitch, int16_t x, int16_t y,
         int16_t width, int16_t height, int8_t max_pitch,
         uint8_t n_pitch_steps);
 void draw_stick(int16_t x, int16_t y, int16_t horizontal, int16_t vertical);
 void draw_map_uav_center();
-void draw_hd_frame(const osdConfig_t * config);
-void osdShowArmed(void);
+void draw_hd_frame(const bfOsdConfig_t * config);
 
 
 enum BrainFPVOSDMode {
@@ -179,26 +178,21 @@ enum BrainFPVOSDMode {
 
 /*******************************************************************************/
 // MAX7456 Emulation
-#define MAX_X(x) ((uint16_t)x * 12)
-#define MAX_Y(y) ((uint16_t)y * 18)
+#define MAX_X(x) (x * 12)
+#define MAX_Y(y) (y * 18)
 
 uint16_t maxScreenSize = VIDEO_BUFFER_CHARS_PAL;
 
 
 static uint8_t bf_font(void)
 {
-    uint8_t font = osdConfig()->font;
+    uint8_t font = bfOsdConfig()->font;
 
     if (font >= NUM_FONTS) {
         font = NUM_FONTS - 1;
     }
 
     return font;
-}
-
-void max7456PreInit(const max7456Config_t *max7456Config)
-{
-    (void)max7456Config;
 }
 
 bool max7456Init(const struct max7456Config_s *max7456Config, const struct vcdProfile_s *vcdProfile, bool cpuOverclock)
@@ -285,11 +279,11 @@ void brainFpvOsdInit(void)
             break;
         }
     }
-    if (osdConfig()->crsf_link_stats && (rxConfig()->serialrx_provider == SERIALRX_CRSF)) {
-        brainfpv_show_crsf_link_info = true;
+    if (bfOsdConfig()->crsf_link_stats && (rxConfig()->serialrx_provider == SERIALRX_CRSF)) {
+        show_crsf_link_info = true;
     }
     else {
-        brainfpv_show_crsf_link_info = false;
+        show_crsf_link_info = false;
     }
 }
 
@@ -304,7 +298,7 @@ void brainFpvOsdWelcome(void)
     write_string(string_buffer, GRAPHICS_X_MIDDLE, GRAPHICS_BOTTOM - 60, 0, 0, TEXT_VA_TOP, TEXT_HA_CENTER, FONT8X10);
     write_string("MENU: THRT MID YAW LEFT PITCH UP", GRAPHICS_X_MIDDLE, GRAPHICS_BOTTOM - 35, 0, 0, TEXT_VA_TOP, TEXT_HA_CENTER, FONT8X10);
 #if defined(USE_BRAINFPV_SPECTROGRAPH)
-    if (osdConfig()->spec_enabled) {
+    if (bfOsdConfig()->spec_enabled) {
         write_string("SPECT: THRT MID YAW RIGHT PITCH UP", GRAPHICS_X_MIDDLE, GRAPHICS_BOTTOM - 25, 0, 0, TEXT_VA_TOP, TEXT_HA_CENTER, FONT8X10);
     }
 #endif
@@ -312,7 +306,7 @@ void brainFpvOsdWelcome(void)
 
 static int32_t getAltitude(void)
 {
-    int32_t alt = getEstimatedAltitudeCm();
+    int32_t alt = baro.BaroAlt;
     switch (osdConfig()->units) {
         case OSD_UNIT_IMPERIAL:
             return (alt * 328) / 100; // Convert to feet / 100
@@ -338,34 +332,34 @@ static float getVelocity(void)
 
 void osdUpdateLocal()
 {
-    if (osdConfig()->altitude_scale && (sensors(SENSOR_BARO) || sensors(SENSOR_GPS))) {
+    if (bfOsdConfig()->altitude_scale && sensors(SENSOR_BARO)) {
         float altitude = getAltitude() / 100.f;
         osd_draw_vertical_scale(altitude, 100, 1, GRAPHICS_RIGHT - 20, GRAPHICS_Y_MIDDLE, 120, 10, 20, 5, 8, 11, 0);
     }
 
     if (sensors(SENSOR_GPS)) {
-        if (osdConfig()->speed_scale) {
+        if (bfOsdConfig()->speed_scale) {
             float speed = getVelocity();
             osd_draw_vertical_scale(speed, 100, -1, GRAPHICS_LEFT + 5, GRAPHICS_Y_MIDDLE, 120, 10, 20, 5, 8, 11, 0);
         }
-        if (osdConfig()->map) {
+        if (bfOsdConfig()->map) {
             draw_map_uav_center();
         }
     }
 
-    if (osdConfig()->sticks_display == 1) {
+    if (bfOsdConfig()->sticks_display == 1) {
         // Mode 2
         draw_stick(GRAPHICS_LEFT + 30, GRAPHICS_BOTTOM - 30, rcData[YAW], rcData[THROTTLE]);
         draw_stick(GRAPHICS_RIGHT - 30, GRAPHICS_BOTTOM - 30, rcData[ROLL], rcData[PITCH]);
     }
-    else if (osdConfig()->sticks_display == 2) {
+    else if (bfOsdConfig()->sticks_display == 2) {
         // Mode 1
         draw_stick(GRAPHICS_LEFT + 30, GRAPHICS_BOTTOM - 30, rcData[YAW], rcData[PITCH]);
         draw_stick(GRAPHICS_RIGHT - 30, GRAPHICS_BOTTOM - 30, rcData[ROLL], rcData[THROTTLE]);
     }
 
-    if (osdConfig()->hd_frame) {
-        draw_hd_frame(osdConfig());
+    if (bfOsdConfig()->hd_frame) {
+        draw_hd_frame(bfOsdConfig());
     }
 }
 
@@ -376,7 +370,6 @@ void osdUpdateLocal()
 #define IS_MID(X) (rcData[X] > 1250 && rcData[X] < 1750)
 
 void osdMain(void) {
-    uint32_t draw_cnt = 0;
     uint32_t key_time = 0;
     uint32_t currentTime;
 
@@ -396,7 +389,7 @@ void osdMain(void) {
           continue;
 
  #if defined(USE_BRAINFPV_SPECTROGRAPH)
-        if (osdConfig()->spec_enabled) {
+        if (bfOsdConfig()->spec_enabled) {
             if (IS_MID(THROTTLE) && IS_HI(YAW) && IS_HI(PITCH) && !ARMING_FLAG(ARMED)) {
                 mode = MODE_SPEC;
             }
@@ -420,20 +413,12 @@ void osdMain(void) {
         else {
             switch (mode) {
                 case MODE_BETAFLIGHT:
-                    if ((draw_cnt % 20 == 0) || cmsInMenu) {
-                        cmsUpdate(currentTime);
-                    }
-                    if (!cmsInMenu){
-                        osdUpdate(currentTime);
-                        if (!osdStatsVisible && !osdArming) {
-                            osdUpdateLocal();
-                        }
-                        if (osdArming) {
-                            osdShowArmed();
-                        }
+                    osdUpdate(currentTime);
+                    if (!cmsInMenu && !osd_arming_or_stats){
+                        osdUpdateLocal();
                     }
                     if (cmsInMenu && brainfpv_hd_frame_menu) {
-                        draw_hd_frame(&osdConfigCms);
+                        draw_hd_frame(&bfOsdConfigCms);
                     }
                     break;
                 case MODE_SPEC:
@@ -445,14 +430,32 @@ void osdMain(void) {
                     break;
             }
         }
-        draw_cnt += 1;
     }
 }
 
+void brainFpvOsdArtificialHorizon(void)
+{
+    simple_artificial_horizon(attitude.values.roll, -1 * attitude.values.pitch,
+                              GRAPHICS_X_MIDDLE, GRAPHICS_Y_MIDDLE,
+                              GRAPHICS_BOTTOM * 0.8f, GRAPHICS_RIGHT * 0.8f, 30,
+                              bfOsdConfig()->ahi_steps);
+}
 
-
-
+#define CENTER_BODY       3
+#define CENTER_WING       7
+#define CENTER_RUDDER     5
 #define PITCH_STEP       10
+void brainFpvOsdCenterMark(void)
+{
+    write_line_outlined(GRAPHICS_X_MIDDLE - CENTER_WING - CENTER_BODY, GRAPHICS_Y_MIDDLE ,
+            GRAPHICS_X_MIDDLE - CENTER_BODY, GRAPHICS_Y_MIDDLE, 2, 0, 0, 1);
+    write_line_outlined(GRAPHICS_X_MIDDLE + 1 + CENTER_BODY, GRAPHICS_Y_MIDDLE,
+            GRAPHICS_X_MIDDLE + 1 + CENTER_BODY + CENTER_WING, GRAPHICS_Y_MIDDLE, 0, 2, 0, 1);
+    write_line_outlined(GRAPHICS_X_MIDDLE, GRAPHICS_Y_MIDDLE - CENTER_RUDDER - CENTER_BODY, GRAPHICS_X_MIDDLE,
+            GRAPHICS_Y_MIDDLE - CENTER_BODY, 2, 0, 0, 1);
+}
+
+
 static void simple_artificial_horizon(int16_t roll, int16_t pitch, int16_t x, int16_t y,
         int16_t width, int16_t height, int8_t max_pitch, uint8_t n_pitch_steps)
 {
@@ -614,8 +617,12 @@ const point_t HOME_ARROW[] = {
     }
 };
 
-
-
+void brainFfpvOsdHomeArrow(int home_dir, uint16_t x, uint16_t y)
+{
+    x = MAX_X(x);
+    y = MAX_Y(y);
+    draw_polygon(x, y, home_dir, HOME_ARROW, 7, 0, 1);
+}
 
 #define MAP_MAX_DIST_PX 70
 void draw_map_uav_center()
@@ -624,11 +631,11 @@ void draw_map_uav_center()
 
     uint16_t dist_to_home_m = GPS_distanceToHome;
 
-    if (dist_to_home_m > osdConfig()->map_max_dist_m) {
-        dist_to_home_m = osdConfig()->map_max_dist_m;
+    if (dist_to_home_m > bfOsdConfig()->map_max_dist_m) {
+        dist_to_home_m = bfOsdConfig()->map_max_dist_m;
     }
 
-    float dist_to_home_px = MAP_MAX_DIST_PX * (float)dist_to_home_m / (float)osdConfig()->map_max_dist_m;
+    float dist_to_home_px = MAP_MAX_DIST_PX * (float)dist_to_home_m / (float)bfOsdConfig()->map_max_dist_m;
 
     // don't draw map if we are very close to home
     if (dist_to_home_px < 1.0f) {
@@ -646,7 +653,7 @@ void draw_map_uav_center()
 }
 
 #define HD_FRAME_CORNER_LEN 10
-void draw_hd_frame(const osdConfig_t * config)
+void draw_hd_frame(const bfOsdConfig_t * config)
 {
     uint16_t x1, x2;
     uint16_t y1, y2;
@@ -693,148 +700,89 @@ void draw_hd_frame(const osdConfig_t * config)
     }
 }
 
-
-
-void osdElementDummy_BrainFPV(osdElementParms_t *element)
-{
-    element->drawElement = false;
-}
-
-void osdElementArtificialHorizon_BrainFPV(osdElementParms_t *element)
-{
-    simple_artificial_horizon(attitude.values.roll, -1 * attitude.values.pitch,
-                              GRAPHICS_X_MIDDLE, GRAPHICS_Y_MIDDLE,
-                              GRAPHICS_BOTTOM * 0.8f, GRAPHICS_RIGHT * 0.8f, 30,
-                              osdConfig()->ahi_steps);
-    element->drawElement = false;
-}
-
-
-void osdElementGpsHomeDirection_BrainFPV(osdElementParms_t *element)
-{
-    bool valid = false;
-    if (STATE(GPS_FIX) && STATE(GPS_FIX_HOME) && (GPS_distanceToHome > 0)) {
-        valid = true;
-    }
-    int home_dir = GPS_directionToHome - DECIDEGREES_TO_DEGREES(attitude.values.yaw);
-    if (valid || !blinkState) {
-        draw_polygon(MAX_X(element->elemPosX), MAX_Y(element->elemPosY), home_dir, HOME_ARROW, 7, 0, 1);
-    }
-    element->drawElement = false;
-}
-
-void osdElementCraftName(osdElementParms_t *element);
-
-void osdElementCraftName_BrainFPV(osdElementParms_t *element)
-{
-    if (brainfpv_user_avatar_set && osdConfig()->show_pilot_logo) {
-        brainFpvOsdUserLogo(element->elemPosX + 4, element->elemPosY);
-        element->drawElement = false;
-    }
-    else {
-        osdElementCraftName(element);
-    }
-}
-
-#define CENTER_BODY       3
-#define CENTER_WING       7
-#define CENTER_RUDDER     5
-void osdElementCrosshairs_BrainFPV(osdElementParms_t *element)
-{
-    write_line_outlined(GRAPHICS_X_MIDDLE - CENTER_WING - CENTER_BODY, GRAPHICS_Y_MIDDLE ,
-            GRAPHICS_X_MIDDLE - CENTER_BODY, GRAPHICS_Y_MIDDLE, 2, 0, 0, 1);
-    write_line_outlined(GRAPHICS_X_MIDDLE + 1 + CENTER_BODY, GRAPHICS_Y_MIDDLE,
-            GRAPHICS_X_MIDDLE + 1 + CENTER_BODY + CENTER_WING, GRAPHICS_Y_MIDDLE, 0, 2, 0, 1);
-    write_line_outlined(GRAPHICS_X_MIDDLE, GRAPHICS_Y_MIDDLE - CENTER_RUDDER - CENTER_BODY, GRAPHICS_X_MIDDLE,
-            GRAPHICS_Y_MIDDLE - CENTER_BODY, 2, 0, 0, 1);
-    element->drawElement = false;
-}
-
-void osd_crsf_widget(osdElementParms_t *element, uint16_t lq_threshold);
-
-void osdElementRssi(osdElementParms_t *element);
-void osdElementRssi_BrainFPV(osdElementParms_t *element)
-{
-    if (!brainfpv_show_crsf_link_info) {
-        osdElementRssi(element);
-    }
-    else {
-        osd_crsf_widget(element, osdConfig()->rssi_alarm);
-    }
-}
-
-void osdElementLinkQuality(osdElementParms_t *element);
-void osdElementLinkQuality_BrainFPV(osdElementParms_t *element)
-{
-    if (!brainfpv_show_crsf_link_info) {
-        osdElementLinkQuality(element);
-    }
-    else {
-        osd_crsf_widget(element, osdConfig()->link_quality_alarm);
-    }
-}
-
 #define CRSF_LINE_SPACING 12
-void osd_crsf_widget(osdElementParms_t *element, uint16_t lq_threshold)
+
+bool osdElementRssi_BrainFPV(uint16_t x_pos, uint16_t y_pos)
 {
-    char tmp_str[20];
+    if (!show_crsf_link_info) {
+        return false;
+    }
+    else {
+        char tmp_str[20];
+        bool show;
 
-    uint16_t x_pos = MAX_X(element->elemPosX);
-    uint16_t y_pos = MAX_Y(element->elemPosY);
+        x_pos = MAX_X(x_pos);
+        y_pos = MAX_Y(y_pos);
 
-    bool show;
+        tfp_sprintf(tmp_str, "%c%d", SYM_RSSI, crsf_link_info.lq);
+        write_string(tmp_str, x_pos, y_pos, 0, 0, TEXT_VA_TOP, TEXT_HA_LEFT, bf_font());
+        y_pos += 16;
 
-    tfp_sprintf(tmp_str, "%c%d", SYM_RSSI, crsf_link_info.lq);
-    write_string(tmp_str, x_pos, y_pos, 0, 0, TEXT_VA_TOP, TEXT_HA_LEFT, bf_font());
-    y_pos += 16;
+        if (bfOsdConfig()->crsf_link_stats_power) {
+            tfp_sprintf(tmp_str, "%dmW", crsf_link_info.tx_power);
+            write_string(tmp_str, x_pos, y_pos, 0, 0, TEXT_VA_TOP, TEXT_HA_LEFT, FONT8X10);
+            y_pos += CRSF_LINE_SPACING;
+        }
 
-    if (osdConfig()->crsf_link_stats_power) {
-        tfp_sprintf(tmp_str, "%dmW", crsf_link_info.tx_power);
-        write_string(tmp_str, x_pos, y_pos, 0, 0, TEXT_VA_TOP, TEXT_HA_LEFT, FONT8X10);
-        y_pos += CRSF_LINE_SPACING;
+        switch (bfOsdConfig()->crsf_link_stats_rssi) {
+            case CRSF_OFF:
+                show = false;
+                break;
+            case CRSF_LQ_LOW:
+                show = (crsf_link_info.lq <= osdConfig()->rssi_alarm);
+                break;
+            case CRSF_SNR_LOW:
+                show =  (crsf_link_info.snr <= bfOsdConfig()->crsf_link_stats_snr_threshold);
+                break;
+            case CRSF_ON:
+                show = true;
+                break;
+        }
+
+        if (show) {
+            tfp_sprintf(tmp_str, "%ddBm", -1 * (int16_t)crsf_link_info.rssi);
+            write_string(tmp_str, x_pos, y_pos, 0, 0, TEXT_VA_TOP, TEXT_HA_LEFT, FONT8X10);
+            y_pos += CRSF_LINE_SPACING;
+        }
+
+        switch (bfOsdConfig()->crsf_link_stats_snr) {
+            case CRSF_OFF:
+                show = false;
+                break;
+            case CRSF_LQ_LOW:
+                show = (crsf_link_info.lq <= osdConfig()->rssi_alarm);
+                break;
+            case CRSF_SNR_LOW:
+                show =  (crsf_link_info.snr <= bfOsdConfig()->crsf_link_stats_snr_threshold);
+                break;
+            case CRSF_ON:
+                show = true;
+                break;
+        }
+
+        if (show) {
+            tfp_sprintf(tmp_str, "SN %ddB", crsf_link_info.snr);
+            write_string(tmp_str, x_pos, y_pos, 0, 0, TEXT_VA_TOP, TEXT_HA_LEFT, FONT8X10);
+        }
+
+        // set the RSSI for other things in betaflight
+        setRssiCrsfLq(crsf_link_info.lq);
     }
 
-    switch (osdConfig()->crsf_link_stats_rssi) {
-        case CRSF_OFF:
-            show = false;
-            break;
-        case CRSF_LQ_LOW:
-            show = (crsf_link_info.lq <= lq_threshold);
-            break;
-        case CRSF_SNR_LOW:
-            show =  (crsf_link_info.snr <= osdConfig()->crsf_link_stats_snr_threshold);
-            break;
-        case CRSF_ON:
-            show = true;
-            break;
-    }
-
-    if (show) {
-        tfp_sprintf(tmp_str, "%ddBm", -1 * (int16_t)crsf_link_info.rssi);
-        write_string(tmp_str, x_pos, y_pos, 0, 0, TEXT_VA_TOP, TEXT_HA_LEFT, FONT8X10);
-        y_pos += CRSF_LINE_SPACING;
-    }
-
-    switch (osdConfig()->crsf_link_stats_snr) {
-        case CRSF_OFF:
-            show = false;
-            break;
-        case CRSF_LQ_LOW:
-            show = (crsf_link_info.lq <= lq_threshold);
-            break;
-        case CRSF_SNR_LOW:
-            show =  (crsf_link_info.snr <= osdConfig()->crsf_link_stats_snr_threshold);
-            break;
-        case CRSF_ON:
-            show = true;
-            break;
-    }
-
-    if (show) {
-        tfp_sprintf(tmp_str, "SN %ddB", crsf_link_info.snr);
-        write_string(tmp_str, x_pos, y_pos, 0, 0, TEXT_VA_TOP, TEXT_HA_LEFT, FONT8X10);
-    }
+    return true;
 }
-
 
 #endif /* USE_BRAINFPV_OSD */
+
+
+
+
+
+
+
+
+
+
+
+
+

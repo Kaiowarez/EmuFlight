@@ -567,7 +567,7 @@ throttleStatus_e calculateThrottleStatus()
 
 void delay(uint32_t) {}
 
-bool featureIsEnabled(uint32_t mask) {
+bool feature(uint32_t mask) {
     return (mask & testFeatureMask);
 }
 
@@ -587,11 +587,6 @@ uint16_t getCurrentMinthrottle(void)
 bool isUsingSticksForArming(void)
 {
     return isUsingSticksToArm;
-}
-
-bool areSticksActive(uint8_t stickPercentLimit) {
-    UNUSED(stickPercentLimit);
-    return false;
 }
 
 void beeperConfirmationBeeps(uint8_t beepCount) { UNUSED(beepCount); }

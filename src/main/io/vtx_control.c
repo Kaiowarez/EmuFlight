@@ -37,7 +37,7 @@
 #include "fc/config.h"
 #include "fc/runtime_config.h"
 
-#include "osd/osd.h"
+#include "io/osd.h"
 #include "io/spektrum_vtx_control.h"
 #include "io/vtx.h"
 #include "io/vtx_control.h"

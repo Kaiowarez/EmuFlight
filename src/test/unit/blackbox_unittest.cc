@@ -26,7 +26,6 @@ extern "C" {
     #include "pg/pg.h"
     #include "pg/pg_ids.h"
     #include "pg/rx.h"
-    #include "pg/motor.h"
 
     #include "drivers/accgyro/accgyro.h"
     #include "drivers/accgyro/gyro_sync.h"
@@ -74,7 +73,7 @@ TEST(BlackboxTest, TestInitIntervals)
     EXPECT_EQ(4096, blackboxSInterval);
 
     // 1kHz PIDloop
-    gyro.targetLooptime = gyroSetSampleRate(&gyroDev, GYRO_HARDWARE_LPF_1KHZ_SAMPLE, 1);
+    gyro.targetLooptime = gyroSetSampleRate(&gyroDev, GYRO_HARDWARE_LPF_1KHZ_SAMPLE, 1, false);
     targetPidLooptime = gyro.targetLooptime * 1;
     blackboxInit();
     EXPECT_EQ(32, blackboxIInterval);
@@ -97,20 +96,26 @@ TEST(BlackboxTest, TestInitIntervals)
 
     // 8kHz PIDloop
     targetPidLooptime = 125;
+    gyro.targetLooptime = gyroSetSampleRate(&gyroDev, GYRO_LPF_256HZ, 1, false);
+    EXPECT_EQ(125, gyro.targetLooptime);
     blackboxInit();
     EXPECT_EQ(256, blackboxIInterval);
     EXPECT_EQ(8, blackboxPInterval);
     EXPECT_EQ(65536, blackboxSInterval);
 
     // 16kHz PIDloop
-    targetPidLooptime = 63; // rounded from 62.5
+    targetPidLooptime = 62;
+    gyro.targetLooptime = gyroSetSampleRate(&gyroDev, GYRO_LPF_256HZ, 2, true);
+    EXPECT_EQ(64, gyro.targetLooptime);
     blackboxInit();
     EXPECT_EQ(512, blackboxIInterval); // note rounding
     EXPECT_EQ(16, blackboxPInterval);
     EXPECT_EQ(131072, blackboxSInterval);
 
     // 32kHz PIDloop
-    targetPidLooptime = 31; // rounded from 31.25
+    targetPidLooptime = 31;
+    gyro.targetLooptime = gyroSetSampleRate(&gyroDev, GYRO_LPF_256HZ, 1, true);
+    EXPECT_EQ(32, gyro.targetLooptime);
     blackboxInit();
     EXPECT_EQ(1024, blackboxIInterval); // note rounding
     EXPECT_EQ(32, blackboxPInterval);
@@ -389,7 +394,7 @@ bool sensors(uint32_t) {return false;}
 void serialWrite(serialPort_t *, uint8_t) {}
 uint32_t serialTxBytesFree(const serialPort_t *) {return 0;}
 bool isSerialTransmitBufferEmpty(const serialPort_t *) {return false;}
-bool featureIsEnabled(uint32_t) {return false;}
+bool feature(uint32_t) {return false;}
 void mspSerialReleasePortIfAllocated(serialPort_t *) {}
 serialPortConfig_t *findSerialPortConfig(serialPortFunction_e ) {return NULL;}
 serialPort_t *findSharedSerialPort(uint16_t , serialPortFunction_e ) {return NULL;}

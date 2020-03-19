@@ -60,7 +60,7 @@
 #endif
 
 #ifdef USE_OSD
-#include "osd/osd.h"
+#include "io/osd.h"
 #endif
 
 PG_REGISTER_WITH_RESET_TEMPLATE(cameraControlConfig_t, cameraControlConfig, PG_CAMERA_CONTROL_CONFIG, 0);

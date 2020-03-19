@@ -23,11 +23,10 @@ extern "C" {
 #include "drivers/barometer/barometer.h"
 #include "drivers/bus.h"
 
-void bmp280Calculate(int32_t *pressure, int32_t *temperature);
+void bmp280_calculate(int32_t *pressure, int32_t *temperature);
 
 extern uint32_t bmp280_up;
 extern uint32_t bmp280_ut;
-extern int32_t t_fine; /* calibration t_fine data */
 
 typedef struct bmp280_calib_param_s {
     uint16_t dig_T1; /* calibration T1 data */
@@ -42,7 +41,8 @@ typedef struct bmp280_calib_param_s {
     int16_t dig_P7; /* calibration P7 data */
     int16_t dig_P8; /* calibration P8 data */
     int16_t dig_P9; /* calibration P9 data */
-} __attribute__((packed)) bmp280_calib_param_t; // packed as we read directly from the device into this structure.
+    int32_t t_fine; /* calibration t_fine data */
+} bmp280_calib_param_t;
 
 bmp280_calib_param_t bmp280_cal;
 }
@@ -58,7 +58,6 @@ TEST(baroBmp280Test, TestBmp280Calculate)
     int32_t pressure, temperature;
     bmp280_up = 415148; // Digital pressure value
     bmp280_ut = 519888; // Digital temperature value
-    t_fine = 0;
 
     // and
     bmp280_cal.dig_T1 = 27504;
@@ -75,7 +74,7 @@ TEST(baroBmp280Test, TestBmp280Calculate)
     bmp280_cal.dig_P9 = 6000;
 
     // when
-    bmp280Calculate(&pressure, &temperature);
+    bmp280_calculate(&pressure, &temperature);
 
     // then
     EXPECT_EQ(100653, pressure); // 100653 Pa
@@ -88,7 +87,6 @@ TEST(baroBmp280Test, TestBmp280CalculateHighP)
     int32_t pressure, temperature;
     bmp280_up = 215148; // Digital pressure value
     bmp280_ut = 519888; // Digital temperature value
-    t_fine = 0;
 
     // and
     bmp280_cal.dig_T1 = 27504;
@@ -105,7 +103,7 @@ TEST(baroBmp280Test, TestBmp280CalculateHighP)
     bmp280_cal.dig_P9 = 6000;
 
     // when
-    bmp280Calculate(&pressure, &temperature);
+    bmp280_calculate(&pressure, &temperature);
 
     // then
     EXPECT_EQ(135382, pressure); // 135385 Pa
@@ -118,7 +116,6 @@ TEST(baroBmp280Test, TestBmp280CalculateZeroP)
     int32_t pressure, temperature;
     bmp280_up = 415148; // Digital pressure value
     bmp280_ut = 519888; // Digital temperature value
-    t_fine = 0;
 
     // and
     bmp280_cal.dig_T1 = 27504;
@@ -135,7 +132,7 @@ TEST(baroBmp280Test, TestBmp280CalculateZeroP)
     bmp280_cal.dig_P9 = 6000;
 
     // when
-    bmp280Calculate(&pressure, &temperature);
+    bmp280_calculate(&pressure, &temperature);
 
     // then
     EXPECT_EQ(0, pressure); // P1=0 trips pressure to 0 Pa, avoiding division by zero
@@ -147,19 +144,13 @@ TEST(baroBmp280Test, TestBmp280CalculateZeroP)
 extern "C" {
 
 void delay(uint32_t) {}
-bool busBusy(const busDevice_t*, bool*) {return false;}
 bool busReadRegisterBuffer(const busDevice_t*, uint8_t, uint8_t*, uint8_t) {return true;}
-bool busReadRegisterBufferStart(const busDevice_t*, uint8_t, uint8_t*, uint8_t) {return true;}
 bool busWriteRegister(const busDevice_t*, uint8_t, uint8_t) {return true;}
-bool busWriteRegisterStart(const busDevice_t*, uint8_t, uint8_t) {return true;}
 
-void spiBusSetDivisor() {
+void spiSetDivisor() {
 }
 
-void spiBusTransactionInit() {
-}
-
-void spiPreinitByIO() {
+void spiPreinitCsByIO() {
 }
 
 void IOConfigGPIO() {

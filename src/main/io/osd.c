@@ -78,7 +78,7 @@
 #include "io/beeper.h"
 #include "io/flashfs.h"
 #include "io/gps.h"
-#include "osd/osd.h"
+#include "io/osd.h"
 #include "io/vtx_string.h"
 #include "io/vtx.h"
 
@@ -101,6 +101,11 @@
 
 #define VIDEO_BUFFER_CHARS_PAL    480
 #define FULL_CIRCLE 360
+
+#ifdef USE_BRAINFPV_OSD
+#include "brainfpv/brainfpv_osd.h"
+extern bool osdArming;
+#endif
 
 const char * const osdTimerSourceNames[] = {
     "ON TIME  ",
@@ -150,6 +155,11 @@ static displayPort_t *osdDisplayPort;
 #ifdef USE_ESC_SENSOR
 static escSensorData_t *escDataCombined;
 #endif
+
+#if defined(USE_BRAINFPV_OSD)
+#include "brainfpv/brainfpv_osd.h"
+extern bool brainfpv_show_crsf_link_info;
+#endif // USE_BRAINFPV_OSD
 
 #define AH_SYMBOL_COUNT 9
 #define AH_SIDEBAR_WIDTH_POS 7

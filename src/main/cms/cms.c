@@ -72,7 +72,7 @@ extern bool brainfpv_hd_frame_menu;
 #include "flight/mixer.h"
 
 // For VISIBLE*
-#include "osd/osd.h"
+#include "io/osd.h"
 #include "io/rcdevice_cam.h"
 
 #include "rx/rx.h"

@@ -48,7 +48,7 @@
 #include "rx/cc2500_frsky_common.h"
 
 #include "io/serial.h"
-#include "osd/osd.h"
+#include "io/osd.h"
 #include "io/vtx.h"
 #include "io/ledstrip.h"
 

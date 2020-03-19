@@ -47,10 +47,10 @@ extern "C" {
     #include "fc/config.h"
     #include "flight/imu.h"
 
+    #include "interface/msp.h"
+
     #include "io/serial.h"
     #include "io/gps.h"
-
-    #include "msp/msp.h"
 
     #include "rx/rx.h"
     #include "rx/crsf.h"
@@ -63,14 +63,12 @@ extern "C" {
     #include "telemetry/smartport.h"
     #include "sensors/acceleration.h"
 
-    rssiSource_e rssiSource;
     bool handleMspFrame(uint8_t *frameStart, int frameLength, uint8_t *skipsBeforeResponse);
     bool sendMspReply(uint8_t payloadSize, mspResponseFnPtr responseFn);
     uint8_t sbufReadU8(sbuf_t *src);
     int sbufBytesRemaining(sbuf_t *buf);
     void initSharedMsp();
     uint16_t testBatteryVoltage = 0;
-
     int32_t testAmperage = 0;
     uint8_t mspTxData[64]; //max frame size
     sbuf_t mspTxDataBuf;
@@ -261,12 +259,6 @@ extern "C" {
     uint16_t getBatteryVoltage(void) {
         return testBatteryVoltage;
     }
-    uint16_t getLegacyBatteryVoltage(void) {
-        return (testBatteryVoltage + 5) / 10;
-    }
-    uint16_t getBatteryAverageCellVoltage(void) {
-        return 0;
-    }
     bool isAmperageConfigured(void) { return true; }
     int32_t getAmperage(void) {
         return testAmperage;
@@ -276,19 +268,12 @@ extern "C" {
         return 67;
     }
 
-    int32_t getEstimatedAltitudeCm(void) {
-    	return 0;
-    }
+    bool feature(uint32_t) {return false;}
 
-    bool featureIsEnabled(uint32_t) {return false;}
+    bool isAirmodeActive(void) {return true;}
 
-    bool airmodeIsEnabled(void) {return true;}
+    mspResult_e mspFcProcessCommand(mspPacket_t *cmd, mspPacket_t *reply, mspPostProcessFnPtr *mspPostProcessFn) {
 
-    mspDescriptor_t mspDescriptorAlloc(void) {return 0;}
-
-    mspResult_e mspFcProcessCommand(mspDescriptor_t srcDesc, mspPacket_t *cmd, mspPacket_t *reply, mspPostProcessFnPtr *mspPostProcessFn) {
-
-        UNUSED(srcDesc);
         UNUSED(mspPostProcessFn);
 
         sbuf_t *dst = &reply->buf;
@@ -311,9 +296,4 @@ extern "C" {
     int32_t getMAhDrawn(void) {
       return testmAhDrawn;
     }
-
-    bool telemetryIsSensorEnabled(sensor_e) {
-        return true;
-    }
-
 }

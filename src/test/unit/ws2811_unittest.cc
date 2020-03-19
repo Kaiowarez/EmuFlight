@@ -31,15 +31,30 @@ extern "C" {
 #include "gtest/gtest.h"
 
 extern "C" {
-    void updateLEDDMABuffer(ledStripFormatRGB_e ledFormat, rgbColor24bpp_t *color, unsigned ledIndex);
+STATIC_UNIT_TESTED extern uint16_t dmaBufferOffset;
+
+STATIC_UNIT_TESTED void fastUpdateLEDDMABuffer(rgbColor24bpp_t *color);
+STATIC_UNIT_TESTED void updateLEDDMABuffer(uint8_t componentValue);
 }
 
 TEST(WS2812, updateDMABuffer) {
     // given
     rgbColor24bpp_t color1 = { .raw = {0xFF,0xAA,0x55} };
 
+    // and
+    dmaBufferOffset = 0;
+
     // when
-    updateLEDDMABuffer(LED_GRB, &color1, 0);
+#if 0
+    updateLEDDMABuffer(color1.rgb.g);
+    updateLEDDMABuffer(color1.rgb.r);
+    updateLEDDMABuffer(color1.rgb.b);
+#else
+    fastUpdateLEDDMABuffer(&color1);
+#endif
+
+    // then
+    EXPECT_EQ(24, dmaBufferOffset);
 
     // and
     uint8_t byteIndex = 0;
@@ -81,10 +96,8 @@ rgbColor24bpp_t* hsvToRgb24(const hsvColor_t *c) {
     return NULL;
 }
 
-bool ws2811LedStripHardwareInit(ioTag_t ioTag) {
+void ws2811LedStripHardwareInit(ioTag_t ioTag) {
     UNUSED(ioTag);
-
-    return true;
 }
 
 void ws2811LedStripDMAEnable(void) {}

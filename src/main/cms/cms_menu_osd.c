@@ -40,7 +40,7 @@
 #include "pg/pg_ids.h"
 
 #include "io/displayport_max7456.h"
-#include "osd/osd.h"
+#include "io/osd.h"
 
 #ifdef USE_EXTENDED_CMS_MENUS
 static uint16_t osdConfig_item_pos[OSD_ITEM_COUNT];

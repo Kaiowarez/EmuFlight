@@ -150,10 +150,10 @@ static void BMI160_Init(const busDevice_t *bus)
 
 #ifdef BRAINFPV
     /* Perform fast offset compensation if requested */
-    if (osdConfig()->bmi160foc) {
+    if (bfOsdConfig()->bmi160foc) {
         int16_t foc_ret = BMI160_do_foc(bus);
-        osdConfigMutable()->bmi160foc = false;
-        osdConfigMutable()->bmi160foc_ret = foc_ret;
+        bfOsdConfigMutable()->bmi160foc = false;
+        bfOsdConfigMutable()->bmi160foc_ret = foc_ret;
         writeEEPROM();
     }
 #endif

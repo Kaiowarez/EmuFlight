@@ -39,7 +39,7 @@
 #include "io/ledstrip.h"
 #include "io/serial.h"
 #include "io/beeper.h"
-#include "osd/osd.h"
+#include "io/osd.h"
 
 #include "telemetry/telemetry.h"
 
@@ -173,12 +173,14 @@ const float FFT_WINDOW[SPEC_FFT_LENGTH] = {
 
 const char * AXIS_NAMES[] = {"ROLL", "PITCH", "YAW"};
 
-#define SPEC_NUM_AXIS 3
 
-uint8_t spec_current_axis = 0;
 
-float spec_gyro_data[SPEC_FFT_LENGTH];
+float spec_gyro_data_roll[SPEC_FFT_LENGTH];
+float spec_gyro_data_pitch[SPEC_FFT_LENGTH];
+float spec_gyro_data_yaw[SPEC_FFT_LENGTH];
 float fft_out[SPEC_FFT_LENGTH];
+
+float * spec_gyro_data_rpy[3] = {spec_gyro_data_roll, spec_gyro_data_pitch, spec_gyro_data_yaw};
 
 static float max_rpy[3] = {0, 0, 0};
 static uint8_t spec_disp_buffer_rpy[3][SPEC_N_SAMPLES];
@@ -210,32 +212,25 @@ void spectrographMain()
     uint32_t max_idx;
 
     chMtxLock(&fftOutputMtx);
+    for (int axis = 0; axis < 3; axis ++) {
+        for (int i=0; i<SPEC_FFT_LENGTH; i++) {
+            spec_gyro_data_rpy[axis][i] *= FFT_WINDOW[i];
+        }
+        arm_rfft_fast_f32(&fft_inst, spec_gyro_data_rpy[axis], fft_out, 0);
+        arm_cmplx_mag_f32(fft_out, fft_out, SPEC_N_SAMPLES);
 
-    for (int i=0; i<SPEC_FFT_LENGTH; i++) {
-        spec_gyro_data[i] *= FFT_WINDOW[i];
+        #define MAX_START_FREQ 50
+        arm_max_f32(&fft_out[FFT_BIN(MAX_START_FREQ)], SPEC_N_SAMPLES - FFT_BIN(MAX_START_FREQ) - 1, &max_val, &max_idx);
+
+        old_max = max_rpy[axis];
+        max_rpy[axis] = MAX(max_rpy[axis], max_val);
+
+        for (int i=0; i<SPEC_N_SAMPLES; i++){
+            this_val = MIN(fft_out[i + 1], max_rpy[axis]); // clamp values
+            spec_disp_buffer_max_rpy[axis][i] = 255 * MAX(this_val, old_max * (float)spec_disp_buffer_max_rpy[axis][i] / 255) / max_rpy[axis];
+            spec_disp_buffer_rpy[axis][i] = 255 * (this_val / max_rpy[axis]);
+        }
     }
-    arm_rfft_fast_f32(&fft_inst, spec_gyro_data, fft_out, 0);
-    arm_cmplx_mag_f32(fft_out, fft_out, SPEC_N_SAMPLES);
-
-    #define MAX_START_FREQ 50
-    arm_max_f32(&fft_out[FFT_BIN(MAX_START_FREQ)], SPEC_N_SAMPLES - FFT_BIN(MAX_START_FREQ) - 1, &max_val, &max_idx);
-
-    old_max = max_rpy[spec_current_axis];
-    max_rpy[spec_current_axis] = MAX(max_rpy[spec_current_axis], max_val);
-
-    for (int i=0; i<SPEC_N_SAMPLES; i++){
-        this_val = MIN(fft_out[i + 1], max_rpy[spec_current_axis]); // clamp values
-        spec_disp_buffer_max_rpy[spec_current_axis][i] = 255 * MAX(this_val, old_max * (float)spec_disp_buffer_max_rpy[spec_current_axis][i] / 255) / max_rpy[spec_current_axis];
-        spec_disp_buffer_rpy[spec_current_axis][i] = 255 * (this_val / max_rpy[spec_current_axis]);
-    }
-
-    if (spec_current_axis < SPEC_NUM_AXIS - 1) {
-        spec_current_axis += 1;
-    }
-    else {
-        spec_current_axis = 0;
-    }
-
     chMtxUnlock(&fftOutputMtx);
 
     spec_data_processed = true;

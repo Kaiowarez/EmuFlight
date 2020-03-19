@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "interface/crsf_protocol.h"
+#include "rx/crsf_protocol.h"
 
 
 #define CRSF_PORT_OPTIONS       (SERIAL_STOPBITS_1 | SERIAL_PARITY_NO)
@@ -39,6 +39,13 @@ typedef union crsfFrame_u {
     uint8_t bytes[CRSF_FRAME_SIZE_MAX];
     crsfFrameDef_t frame;
 } crsfFrame_t;
+
+typedef struct {
+    uint16_t lq;
+    uint8_t rssi;
+    int8_t snr;
+    uint16_t tx_power;
+} crsfLinkInfo_t;
 
 void crsfRxWriteTelemetryData(const void *data, int len);
 void crsfRxSendTelemetryData(void);

@@ -65,7 +65,7 @@
 #include "io/ledstrip.h"
 #include "io/asyncfatfs/asyncfatfs.h"
 #include "io/transponder_ir.h"
-#include "osd/osd.h"
+#include "io/osd.h"
 
 #include "scheduler/scheduler.h"
 
@@ -110,38 +110,38 @@ const timerHardware_t timerHardware[USABLE_TIMER_CHANNEL_COUNT] = {
 bool brainfpv_settings_updated = true;
 bool brainfpv_settings_updated_from_cms = false;
 
-extern osdConfig_t osdConfigCms;
+extern bfOsdConfig_t bfOsdConfigCms;
 
 void brainFPVUpdateSettings(void) {
-    const osdConfig_t * osdConfigUse;
+    const bfOsdConfig_t * bfOsdConfigUse;
 
     if (brainfpv_settings_updated_from_cms)
-        osdConfigUse = &osdConfigCms;
+        bfOsdConfigUse = &bfOsdConfigCms;
     else
-        osdConfigUse = osdConfig();
+        bfOsdConfigUse = bfOsdConfig();
 
-    if (!osdConfigUse->invert){
-        BRAINFPVFPGA_SetBwLevels(osdConfigUse->black_level, osdConfigUse->white_level);
+    if (!bfOsdConfigUse->invert){
+        BRAINFPVFPGA_SetBwLevels(bfOsdConfigUse->black_level, bfOsdConfigUse->white_level);
     }
     else {
-        BRAINFPVFPGA_SetBwLevels(osdConfigUse->white_level, osdConfigUse->black_level);
+        BRAINFPVFPGA_SetBwLevels(bfOsdConfigUse->white_level, bfOsdConfigUse->black_level);
     }
 
-    BRAINFPVFPGA_SetSyncThreshold(osdConfigUse->sync_threshold);
-    BRAINFPVFPGA_SetXOffset(osdConfigUse->x_offset);
-    BRAINFPVFPGA_SetXScale(osdConfigUse->x_scale);
-    BRAINFPVFPGA_Set3DConfig(osdConfigUse->sbs_3d_enabled, osdConfigUse->sbs_3d_right_eye_offset);
+    BRAINFPVFPGA_SetSyncThreshold(bfOsdConfigUse->sync_threshold);
+    BRAINFPVFPGA_SetXOffset(bfOsdConfigUse->x_offset);
+    BRAINFPVFPGA_SetXScale(bfOsdConfigUse->x_scale);
+    BRAINFPVFPGA_Set3DConfig(bfOsdConfigUse->sbs_3d_enabled, bfOsdConfigUse->sbs_3d_right_eye_offset);
 
-    if (osdConfigUse->ir_system == 1) {
+    if (bfOsdConfigUse->ir_system == 1) {
         uint8_t ir_data[6];
-        ir_generate_ilap_packet(osdConfigUse->ir_ilap_id, ir_data, 6);
+        ir_generate_ilap_packet(bfOsdConfigUse->ir_ilap_id, ir_data, 6);
         BRAINFPVFPGA_SetIRData(ir_data, 6);
         BRAINFPVFPGA_SetIRProtocol(BRAINFPVFPGA_IR_PROTOCOL_ILAP);
     }
 
-    if (osdConfigUse->ir_system == 2) {
+    if (bfOsdConfigUse->ir_system == 2) {
         uint8_t ir_data[4];
-        ir_generate_trackmate_packet(osdConfigUse->ir_trackmate_id, ir_data, 6);
+        ir_generate_trackmate_packet(bfOsdConfigUse->ir_trackmate_id, ir_data, 6);
         BRAINFPVFPGA_SetIRData(ir_data, 4);
         BRAINFPVFPGA_SetIRProtocol(BRAINFPVFPGA_IR_PROTOCOL_TRACKMATE);
     }

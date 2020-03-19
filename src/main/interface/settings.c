@@ -60,7 +60,7 @@
 #include "io/gimbal.h"
 #include "io/gps.h"
 #include "io/ledstrip.h"
-#include "osd/osd.h"
+#include "io/osd.h"
 #include "io/vtx.h"
 #include "io/vtx_control.h"
 #include "io/vtx_rtc6705.h"
@@ -719,7 +719,9 @@ const clivalue_t valueTable[] = {
     { "roll_srate",                 VAR_UINT8  | PROFILE_RATE_VALUE, .config.minmax = { 0, CONTROL_RATE_CONFIG_RATE_MAX }, PG_CONTROL_RATE_PROFILES, offsetof(controlRateConfig_t, rates[FD_ROLL]) },
     { "pitch_srate",                VAR_UINT8  | PROFILE_RATE_VALUE, .config.minmax = { 0, CONTROL_RATE_CONFIG_RATE_MAX }, PG_CONTROL_RATE_PROFILES, offsetof(controlRateConfig_t, rates[FD_PITCH]) },
     { "yaw_srate",                  VAR_UINT8  | PROFILE_RATE_VALUE, .config.minmax = { 0, CONTROL_RATE_CONFIG_RATE_MAX }, PG_CONTROL_RATE_PROFILES, offsetof(controlRateConfig_t, rates[FD_YAW]) },
-    { "tpa_rate",                   VAR_UINT8  | PROFILE_RATE_VALUE, .config.minmax = { 0, CONTROL_RATE_CONFIG_TPA_MAX}, PG_CONTROL_RATE_PROFILES, offsetof(controlRateConfig_t, dynThrP) }, //dynThrPID
+    { "tpa_rate_p",                 VAR_UINT8  | PROFILE_RATE_VALUE, .config.minmax = { 0, CONTROL_RATE_CONFIG_TPA_MAX}, PG_CONTROL_RATE_PROFILES, offsetof(controlRateConfig_t, dynThrP) },
+    { "tpa_rate_i",                 VAR_UINT8  | PROFILE_RATE_VALUE, .config.minmax = { 0, CONTROL_RATE_CONFIG_TPA_MAX}, PG_CONTROL_RATE_PROFILES, offsetof(controlRateConfig_t, dynThrI) },
+    { "tpa_rate_d",                 VAR_UINT8  | PROFILE_RATE_VALUE, .config.minmax = { 0, CONTROL_RATE_CONFIG_TPA_MAX}, PG_CONTROL_RATE_PROFILES, offsetof(controlRateConfig_t, dynThrD) },
     { "tpa_breakpoint",             VAR_UINT16 | PROFILE_RATE_VALUE, .config.minmax = { PWM_PULSE_MIN, PWM_PULSE_MAX }, PG_CONTROL_RATE_PROFILES, offsetof(controlRateConfig_t, tpa_breakpoint) },
     { "throttle_limit_type",        VAR_UINT8  | PROFILE_RATE_VALUE | MODE_LOOKUP, .config.lookup = { TABLE_THROTTLE_LIMIT_TYPE }, PG_CONTROL_RATE_PROFILES, offsetof(controlRateConfig_t, throttle_limit_type) },
     { "throttle_limit_percent",     VAR_UINT8  | PROFILE_RATE_VALUE, .config.minmax = { 25, 100 }, PG_CONTROL_RATE_PROFILES, offsetof(controlRateConfig_t, throttle_limit_percent) },
@@ -855,6 +857,8 @@ const clivalue_t valueTable[] = {
     { "d_angle_high",               VAR_UINT8  | PROFILE_VALUE, .config.minmax = { 0, 200 }, PG_PID_PROFILE, offsetof(pidProfile_t, pid[PID_LEVEL_HIGH].D) },
     { "f_angle_low",                VAR_UINT16 | PROFILE_VALUE, .config.minmax = { 0, 2000 }, PG_PID_PROFILE, offsetof(pidProfile_t, pid[PID_LEVEL_LOW].F) },
     { "f_angle_high",               VAR_UINT16 | PROFILE_VALUE, .config.minmax = { 0, 2000 }, PG_PID_PROFILE, offsetof(pidProfile_t, pid[PID_LEVEL_HIGH].F) },
+
+    { "level_limit",                VAR_UINT8  | PROFILE_VALUE, .config.minmax = { 10, 90 }, PG_PID_PROFILE, offsetof(pidProfile_t, levelAngleLimit) },
 
     { "horizon_tilt_effect",        VAR_UINT8  | PROFILE_VALUE, .config.minmax = { 0,  250 }, PG_PID_PROFILE, offsetof(pidProfile_t, horizon_tilt_effect) },
     { "horizon_tilt_expert_mode",   VAR_UINT8  | PROFILE_VALUE | MODE_LOOKUP, .config.lookup = { TABLE_OFF_ON }, PG_PID_PROFILE, offsetof(pidProfile_t, horizon_tilt_expert_mode) },
@@ -1041,50 +1045,6 @@ const clivalue_t valueTable[] = {
     { "max7456_clock",              VAR_UINT8   | MASTER_VALUE | MODE_LOOKUP, .config.lookup = { TABLE_MAX7456_CLOCK }, PG_MAX7456_CONFIG, offsetof(max7456Config_t, clockConfig) },
     { "max7456_spi_bus",            VAR_UINT8   | MASTER_VALUE, .config.minmax = { 0, SPIDEV_COUNT }, PG_MAX7456_CONFIG, offsetof(max7456Config_t, spiDevice) },
 #endif
-#ifdef USE_RX_LINK_QUALITY_INFO
-    { "osd_link_quality_pos",       VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_LINK_QUALITY]) },
-#endif
-#ifdef USE_RX_RSSI_DBM
-    { "osd_rssi_dbm_pos",           VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_RSSI_DBM_VALUE]) },
-#endif
-    { "osd_tim_1_pos",              VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_ITEM_TIMER_1]) },
-    { "osd_tim_2_pos",              VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_ITEM_TIMER_2]) },
-    { "osd_remaining_time_estimate_pos",        VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_REMAINING_TIME_ESTIMATE]) },
-    { "osd_flymode_pos",            VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_FLYMODE]) },
-    { "osd_anti_gravity_pos",       VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_ANTI_GRAVITY]) },
-    { "osd_g_force_pos",            VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_G_FORCE]) },
-    { "osd_throttle_pos",           VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_THROTTLE_POS]) },
-    { "osd_vtx_channel_pos",        VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_VTX_CHANNEL]) },
-    { "osd_crosshairs_pos",         VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_CROSSHAIRS]) },
-    { "osd_ah_sbar_pos",            VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_HORIZON_SIDEBARS]) },
-    { "osd_ah_pos",                 VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_ARTIFICIAL_HORIZON]) },
-    { "osd_current_pos",            VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_CURRENT_DRAW]) },
-    { "osd_mah_drawn_pos",          VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_MAH_DRAWN]) },
-    { "osd_motor_diag_pos",         VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_MOTOR_DIAG]) },
-    { "osd_craft_name_pos",         VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_CRAFT_NAME]) },
-    { "osd_display_name_pos",       VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_DISPLAY_NAME]) },
-    { "osd_gps_speed_pos",          VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_GPS_SPEED]) },
-    { "osd_gps_lon_pos",            VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_GPS_LON]) },
-    { "osd_gps_lat_pos",            VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_GPS_LAT]) },
-    { "osd_gps_sats_pos",           VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_GPS_SATS]) },
-    { "osd_home_dir_pos",           VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_HOME_DIR]) },
-    { "osd_home_dist_pos",          VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_HOME_DIST]) },
-    { "osd_flight_dist_pos",        VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_FLIGHT_DIST]) },
-    { "osd_compass_bar_pos",        VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_COMPASS_BAR]) },
-    { "osd_altitude_pos",           VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_ALTITUDE]) },
-    { "osd_pid_roll_pos",           VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_ROLL_PIDS]) },
-    { "osd_pid_pitch_pos",          VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_PITCH_PIDS]) },
-    { "osd_pid_yaw_pos",            VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_YAW_PIDS]) },
-    { "osd_debug_pos",              VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_DEBUG]) },
-    { "osd_power_pos",              VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_POWER]) },
-    { "osd_pidrate_profile_pos",    VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_PIDRATE_PROFILE]) },
-    { "osd_warnings_pos",           VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_WARNINGS]) },
-    { "osd_avg_cell_voltage_pos",   VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_AVG_CELL_VOLTAGE]) },
-    { "osd_pit_ang_pos",            VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_PITCH_ANGLE]) },
-    { "osd_rol_ang_pos",            VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_ROLL_ANGLE]) },
-    { "osd_battery_usage_pos",      VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_MAIN_BATT_USAGE]) },
-    { "osd_disarmed_pos",           VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_DISARMED]) },
-    { "osd_nheading_pos",           VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, OSD_POSCFG_MAX }, PG_OSD_CONFIG, offsetof(osdConfig_t, item_pos[OSD_NUMERICAL_HEADING]) },
 
 // PG_DISPLAY_PORT_MSP_CONFIG
 #ifdef USE_MSP_DISPLAYPORT
@@ -1143,41 +1103,41 @@ const clivalue_t valueTable[] = {
 #endif
 
 #ifdef USE_BRAINFPV_OSD
-    { "brainfpv_osd_sync_thresh",   VAR_UINT8  | MASTER_VALUE, .config.minmax = { BRAINFPV_OSD_SYNC_TH_MIN, BRAINFPV_OSD_SYNC_TH_MAX }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, sync_threshold) },
-    { "brainfpv_osd_white_level",   VAR_UINT8  | MASTER_VALUE, .config.minmax = { 100, 255 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, white_level) },
-    { "brainfpv_osd_black_level",   VAR_UINT8  | MASTER_VALUE, .config.minmax = { 15, 40 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, black_level) },
-    { "brainfpv_osd_invert",        VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, invert) },
-    { "brainfpv_osd_x_offset",      VAR_INT8   | MASTER_VALUE, .config.minmax = { -8, 7 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, x_offset) },
-    { "brainfpv_osd_x_scale",       VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 15 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, x_scale) },
-    { "brainfpv_osd_sbs3d",         VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, sbs_3d_enabled) },
-    { "brainfpv_osd_sbs3d_roff",    VAR_UINT8  | MASTER_VALUE, .config.minmax = { 10, 40 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, sbs_3d_right_eye_offset) },
-    { "brainfpv_osd_font",          VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 2 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, font) },
-    { "brainfpv_osd_ahi_steps",     VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 9 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, ahi_steps) },
-    { "brainfpv_ir_sys",            VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 2 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, ir_system) },
-    { "brainfpv_ir_ilapid",         VAR_UINT16 | MASTER_VALUE, .config.minmax = { 0, 32767 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, ir_ilap_id) },
-    { "brainfpv_ir_trackmateid",    VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, 4095 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, ir_trackmate_id) },
-    { "brainfpv_bmi160foc",         VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, bmi160foc) },
-    { "brainfpv_bmi160foc_ret",     VAR_UINT16 | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, bmi160foc_ret) },
-    { "brainfpv_altitude_scale",    VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, altitude_scale) },
-    { "brainfpv_speed_scale",    VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, speed_scale) },
-    { "brainfpv_map",    VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, map) },
-    { "brainfpv_map_max_dist_m",    VAR_UINT16  | MASTER_VALUE, .config.minmax = { 10, 32767 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, map_max_dist_m) },
-    { "brainfpv_sticks_display",    VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 2 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, sticks_display) },
-    { "brainfpv_show_logo_on_arm",  VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, show_logo_on_arm) },
-    { "brainfpv_show_pilot_logo",    VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, show_pilot_logo) },
-    { "brainfpv_hd_frame_mode",      VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 2 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, hd_frame) },
-    { "brainfpv_hd_frame_width",     VAR_UINT8  | MASTER_VALUE, .config.minmax = { 20, 255 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, hd_frame_width) },
-    { "brainfpv_hd_frame_height",    VAR_UINT8  | MASTER_VALUE, .config.minmax = { 20, 255 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, hd_frame_height) },
-    { "brainfpv_hd_frame_h_offset",  VAR_INT8   | MASTER_VALUE, .config.minmax = { -100, 100 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, hd_frame_h_offset) },
-    { "brainfpv_hd_frame_v_offset",  VAR_INT8   | MASTER_VALUE, .config.minmax = { -100, 100 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, hd_frame_v_offset) },
-    { "brainfpv_crsf_link_stats",  VAR_UINT8   | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, crsf_link_stats) },
-    { "brainfpv_crsf_link_stats_power",  VAR_UINT8   | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, crsf_link_stats_power) },
-    { "brainfpv_crsf_link_stats_rssi",  VAR_UINT8   | MASTER_VALUE, .config.minmax = { 0, 3 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, crsf_link_stats_rssi) },
-    { "brainfpv_crsf_link_stats_snr",  VAR_UINT8   | MASTER_VALUE, .config.minmax = { 0, 3 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, crsf_link_stats_snr) },
-    { "brainfpv_crsf_link_stats_snr_threshold",  VAR_INT8   | MASTER_VALUE, .config.minmax = { -10, 10 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, crsf_link_stats_snr_threshold) },
+    { "brainfpv_osd_sync_thresh",   VAR_UINT8  | MASTER_VALUE, .config.minmax = { BRAINFPV_OSD_SYNC_TH_MIN, BRAINFPV_OSD_SYNC_TH_MAX }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, sync_threshold) },
+    { "brainfpv_osd_white_level",   VAR_UINT8  | MASTER_VALUE, .config.minmax = { 100, 255 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, white_level) },
+    { "brainfpv_osd_black_level",   VAR_UINT8  | MASTER_VALUE, .config.minmax = { 15, 40 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, black_level) },
+    { "brainfpv_osd_invert",        VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, invert) },
+    { "brainfpv_osd_x_offset",      VAR_INT8   | MASTER_VALUE, .config.minmax = { -8, 7 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, x_offset) },
+    { "brainfpv_osd_x_scale",       VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 15 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, x_scale) },
+    { "brainfpv_osd_sbs3d",         VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, sbs_3d_enabled) },
+    { "brainfpv_osd_sbs3d_roff",    VAR_UINT8  | MASTER_VALUE, .config.minmax = { 10, 40 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, sbs_3d_right_eye_offset) },
+    { "brainfpv_osd_font",          VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 2 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, font) },
+    { "brainfpv_osd_ahi_steps",     VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 9 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, ahi_steps) },
+    { "brainfpv_ir_sys",            VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 2 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, ir_system) },
+    { "brainfpv_ir_ilapid",         VAR_UINT16 | MASTER_VALUE, .config.minmax = { 0, 32767 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, ir_ilap_id) },
+    { "brainfpv_ir_trackmateid",    VAR_UINT16  | MASTER_VALUE, .config.minmax = { 0, 4095 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, ir_trackmate_id) },
+    { "brainfpv_bmi160foc",         VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, bmi160foc) },
+    { "brainfpv_bmi160foc_ret",     VAR_UINT16 | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, bmi160foc_ret) },
+    { "brainfpv_altitude_scale",    VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, altitude_scale) },
+    { "brainfpv_speed_scale",    VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, speed_scale) },
+    { "brainfpv_map",    VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, map) },
+    { "brainfpv_map_max_dist_m",    VAR_UINT16  | MASTER_VALUE, .config.minmax = { 10, 32767 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, map_max_dist_m) },
+    { "brainfpv_sticks_display",    VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 2 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, sticks_display) },
+    { "brainfpv_show_logo_on_arm",  VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, show_logo_on_arm) },
+    { "brainfpv_show_pilot_logo",    VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, show_pilot_logo) },
+    { "brainfpv_hd_frame_mode",      VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 2 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, hd_frame) },
+    { "brainfpv_hd_frame_width",     VAR_UINT8  | MASTER_VALUE, .config.minmax = { 20, 255 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, hd_frame_width) },
+    { "brainfpv_hd_frame_height",    VAR_UINT8  | MASTER_VALUE, .config.minmax = { 20, 255 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, hd_frame_height) },
+    { "brainfpv_hd_frame_h_offset",  VAR_INT8   | MASTER_VALUE, .config.minmax = { -100, 100 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, hd_frame_h_offset) },
+    { "brainfpv_hd_frame_v_offset",  VAR_INT8   | MASTER_VALUE, .config.minmax = { -100, 100 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, hd_frame_v_offset) },
+    { "brainfpv_crsf_link_stats",  VAR_UINT8   | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, crsf_link_stats) },
+    { "brainfpv_crsf_link_stats_power",  VAR_UINT8   | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, crsf_link_stats_power) },
+    { "brainfpv_crsf_link_stats_rssi",  VAR_UINT8   | MASTER_VALUE, .config.minmax = { 0, 3 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, crsf_link_stats_rssi) },
+    { "brainfpv_crsf_link_stats_snr",  VAR_UINT8   | MASTER_VALUE, .config.minmax = { 0, 3 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, crsf_link_stats_snr) },
+    { "brainfpv_crsf_link_stats_snr_threshold",  VAR_INT8   | MASTER_VALUE, .config.minmax = { -10, 10 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, crsf_link_stats_snr_threshold) },
 #endif
 #if defined(USE_BRAINFPV_SPECTROGRAPH)
-    { "brainfpv_spectrograph",      VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(osdConfig_t, spec_enabled) },
+    { "brainfpv_spectrograph",      VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0, 1 }, PG_BRAINFPV_CONFIG, offsetof(bfOsdConfig_t, spec_enabled) },
 #endif
 
 

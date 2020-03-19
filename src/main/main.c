@@ -77,7 +77,7 @@ void appIdleHook(void)
     }
 }
 
-static THD_WORKING_AREA(waBetaFlightThread, 1024);
+static THD_WORKING_AREA(waBetaFlightThread, 2 * 1024);
 static THD_FUNCTION(BetaFlightThread, arg)
 {
     (void)arg;
@@ -97,7 +97,7 @@ static THD_FUNCTION(BetaFlightThread, arg)
 
 void osdInit(displayPort_t *osdDisplayPortToUse);
 
-static THD_WORKING_AREA(waOSDThread, 1024);
+static THD_WORKING_AREA(waOSDThread, 1 * 1024);
 static THD_FUNCTION(OSDThread, arg)
 {
     (void)arg;
@@ -155,7 +155,7 @@ int main()
 #endif /* USE_BRAINFPV_OSD */
 
 #if defined(USE_BRAINFPV_SPECTROGRAPH)
-  if (osdConfig()->spec_enabled) {
+  if (bfOsdConfig()->spec_enabled) {
     spectrographInit();
     chThdCreateStatic(waSpecThread, sizeof(waSpecThread), LOWPRIO, SpecThread, NULL);
   }

@@ -6,9 +6,7 @@
 #include "brainfpv/video.h"
 #include "pg/pg.h"
 
-#include "osd/osd_elements.h"
-
-typedef struct osdConfig_s {
+typedef struct bfOsdConfig_s {
     uint8_t sync_threshold;
     uint8_t white_level;
     uint8_t black_level;
@@ -44,7 +42,7 @@ typedef struct osdConfig_s {
 #if defined(USE_BRAINFPV_SPECTROGRAPH)
     uint8_t spec_enabled;
 #endif
-} osdConfig_t;
+} bfOsdConfig_t;
 
 typedef enum {
     CRSF_OFF = 0,
@@ -53,24 +51,17 @@ typedef enum {
     CRSF_ON = 3,
 } CrsfMode_t;
 
-PG_DECLARE(osdConfig_t, osdConfig);
+PG_DECLARE(bfOsdConfig_t, bfOsdConfig);
 
 void brainFpvOsdInit(void);
 void osdMain(void);
-void resetosdConfig(osdConfig_t *osdConfig);
+void resetBfOsdConfig(bfOsdConfig_t *bfOsdConfig);
 
-
-//void brainFpvOsdArtificialHorizon(void);
+void brainFpvOsdArtificialHorizon(void);
 void brainFpvOsdCenterMark(void);
 void brainFpvOsdUserLogo(uint16_t x, uint16_t y);
 void brainFpvOsdMainLogo(uint16_t x, uint16_t y);
 
-void osdElementDummy_BrainFPV(osdElementParms_t *element);
-void osdElementArtificialHorizon_BrainFPV(osdElementParms_t *element);
-void osdElementGpsHomeDirection_BrainFPV(osdElementParms_t *element);
-void osdElementCraftName_BrainFPV(osdElementParms_t *element);
-void osdElementCrosshairs_BrainFPV(osdElementParms_t *element);
-void osdElementRssi_BrainFPV(osdElementParms_t *element);
-void osdElementLinkQuality_BrainFPV(osdElementParms_t *element);
+bool osdElementRssi_BrainFPV(uint16_t x_pos, uint16_t y_pos);
 
 #endif /* BRAINFPV_OSD */

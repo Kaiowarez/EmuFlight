@@ -32,15 +32,13 @@
 #define FAST_RAM_ZERO_INIT
 #define FAST_RAM
 
-#define PID_PROFILE_COUNT 3
-#define CONTROL_RATE_PROFILE_COUNT  6
+#define MAX_PROFILE_COUNT 3
 #define USE_MAG
 #define USE_BARO
 #define USE_GPS
 #define USE_DASHBOARD
 #define USE_TELEMETRY
 #define USE_LED_STRIP
-#define USE_SERVOS
 #define USE_TRANSPONDER
 
 typedef enum
@@ -108,9 +106,6 @@ typedef struct
 #define WS2811_DMA_TC_FLAG (void *)1
 #define WS2811_DMA_HANDLER_IDENTIFER 0
 #define NVIC_PriorityGroup_2 0x500
-
-#define MCU_TYPE_ID   99
-#define MCU_TYPE_NAME "UNIT_TEST"
 
 #include "target.h"
 
