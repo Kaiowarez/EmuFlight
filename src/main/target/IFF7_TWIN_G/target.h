@@ -23,8 +23,6 @@
 #define TARGET_BOARD_IDENTIFIER "S7X2"
 #define USBD_PRODUCT_STRING     "IFF7_TWIN_G"
 
-#define USE_DUAL_GYRO
-
 #define USE_DSHOT_DMAR
 #define ENABLE_DSHOT_DMAR       true
 
@@ -42,6 +40,7 @@
 #define BEEPER_PIN              PC15
 #define BEEPER_INVERTED
 
+#define USE_DUAL_GYRO
 #define USE_EXTI
 #define USE_GYRO_EXTI
 #define MPU_INT_EXTI         PA8
@@ -58,15 +57,18 @@
 
 #define USE_GYRO
 #define USE_GYRO_SPI_ICM20689
-
 #define USE_ACC
 #define USE_ACC_SPI_ICM20689
 
-#define GYRO_1_ALIGN        CW0_DEG
-#define ACC_1_ALIGN         CW0_DEG
+#define GYRO_MPU6500_1_ALIGN    CW0_DEG
+#define GYRO_MPU6500_2_ALIGN    CW90_DEG
+#define ACC_MPU6500_1_ALIGN     CW0_DEG
+#define ACC_MPU6500_2_ALIGN     CW90_DEG
 
-#define GYRO_2_ALIGN        CW90_DEG
-#define ACC_2_ALIGN         CW90_DEG
+#define GYRO_1_ALIGN            GYRO_MPU6500_1_ALIGN
+#define GYRO_2_ALIGN            GYRO_MPU6500_2_ALIGN
+#define ACC_1_ALIGN             ACC_MPU6500_1_ALIGN
+#define ACC_2_ALIGN             ACC_MPU6500_2_ALIGN
 
 #define GYRO_CONFIG_USE_GYRO_DEFAULT GYRO_CONFIG_USE_GYRO_BOTH
 
