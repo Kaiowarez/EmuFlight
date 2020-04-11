@@ -21,13 +21,8 @@
 #pragma once
 
 //#define USE_TARGET_CONFIG
-#if defined(KAKUTEF7MINI)
-#define TARGET_BOARD_IDENTIFIER "KF7M"
-#define USBD_PRODUCT_STRING "KakuteF7-Mini"
-#else
 #define TARGET_BOARD_IDENTIFIER "KTF7"
-#define USBD_PRODUCT_STRING "KakuteF7"
-#endif
+#define USBD_PRODUCT_STRING "KakuteF7HDV"
 
 #define LED0_PIN                PA2
 
@@ -119,13 +114,6 @@
 #define MAX7456_SPI_CLK         (SPI_CLOCK_STANDARD) // 10MHz
 #define MAX7456_RESTORE_CLK     (SPI_CLOCK_FAST)
 
-#if defined(KAKUTEF7MINI)
-#define ENABLE_BLACKBOX_LOGGING_ON_SPIFLASH_BY_DEFAULT
-#define USE_FLASHFS
-#define USE_FLASH_M25P16
-#define FLASH_CS_PIN            SPI1_NSS_PIN
-#define FLASH_SPI_INSTANCE      SPI1
-#else
 #define USE_SDCARD
 #define SDCARD_DETECT_INVERTED
 #define SDCARD_DETECT_PIN                   PD8
