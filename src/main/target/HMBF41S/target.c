@@ -25,7 +25,7 @@
 #include "drivers/timer_def.h"
 
 const timerHardware_t timerHardware[USABLE_TIMER_CHANNEL_COUNT] = {
-    DEF_TIM(TIM4,  CH4, PB9, TIM_USE_MOTOR,       0, 1), // PWM1
+    DEF_TIM(TIM4,  CH4, PB9, TIM_USE_MOTOR,       0, 0), // PWM1
     DEF_TIM(TIM4,  CH2, PB7, TIM_USE_MOTOR,       0, 0), // PWM2
     DEF_TIM(TIM4,  CH1, PB6, TIM_USE_MOTOR,       0, 0), // PWM3
     DEF_TIM(TIM4,  CH3, PB8, TIM_USE_MOTOR,       0, 0), // PWM4
