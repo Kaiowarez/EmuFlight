@@ -90,6 +90,12 @@
 #define SPI2_SCK_PIN                                    PB13
 #define SPI2_MISO_PIN                                   PB14
 #define SPI2_MOSI_PIN                                   PB15
+
+#define ENABLE_BLACKBOX_LOGGING_ON_SPIFLASH_BY_DEFAULT
+#define USE_FLASHFS
+#define USE_FLASH_M25P16
+#define FLASH_CS_PIN                                    PA15
+#define FLASH_SPI_INSTANCE                              SPI2
 // USB
 #define USE_VCP
 #define USE_USB_DETECT
