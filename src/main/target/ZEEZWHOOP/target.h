@@ -20,19 +20,17 @@
 
 #pragma once
 
-#define TARGET_BOARD_IDENTIFIER "ZEEZ"
-#define USBD_PRODUCT_STRING     "ZEEZWHOOP"
-
+#define TARGET_BOARD_IDENTIFIER "ZEEZWHOOP"
+#define USBD_PRODUCT_STRING     "ZeezWhoopF4"
 #define LED0_PIN                PC13
 
-// *************** Gyro & ACC **********************
-#define USE_SPI
-#define USE_SPI_DEVICE_1
-#define USE_SPI_DEVICE_3
+#define ENABLE_DSHOT_DMAR       true
 
-#define SPI1_SCK_PIN            PA5
-#define SPI1_MISO_PIN           PA6
-#define SPI1_MOSI_PIN           PA7
+#define DSHOT_BITBANG_DEFAULT   DSHOT_BITBANG_OFF
+
+ // *************** Gyro & ACC **********************
+#define USE_SPI
+#define USE_SPI_DEVICE_3
 
 #define SPI3_SCK_PIN            PB3
 #define SPI3_MISO_PIN           PB4
@@ -42,29 +40,24 @@
 #define MPU6000_SPI_INSTANCE    SPI3
 
 #define USE_EXTI
+#define USE_GYRO_EXTI
 #define MPU_INT_EXTI            PC15
 #define USE_MPU_DATA_READY_SIGNAL
 
 #define USE_GYRO
 #define USE_GYRO_SPI_MPU6000
-#define GYRO_MPU6000_ALIGN      CW180_DEG
+#define GYRO_MPU6000_ALIGN      CW90_DEG
 #define USE_ACC
 #define USE_ACC_SPI_MPU6000
-#define ACC_MPU6000_ALIGN       CW180_DEG
 
-// *************** Baro **************************
 #define USE_I2C
-
 #define USE_I2C_DEVICE_1
 #define I2C_DEVICE              (I2CDEV_1)
 #define I2C1_SCL                PB8        // SCL pad
 #define I2C1_SDA                PB9        // SDA pad
 
-
 // *************** UART *****************************
 #define USE_VCP
-#define USB_DETECT_PIN          PC15
-#define USE_USB_DETECT
 
 #define USE_UART1
 #define UART1_RX_PIN            PA10
@@ -74,32 +67,34 @@
 #define UART2_RX_PIN            PA3
 #define UART2_TX_PIN            PA2
 
-#define USE_SOFTSERIAL1
-#define USE_SOFTSERIAL2
-
-#define SERIAL_PORT_COUNT       5
+#define SERIAL_PORT_COUNT       3
 
 #define DEFAULT_RX_FEATURE      FEATURE_RX_SERIAL
-#define SERIALRX_PROVIDER       SERIALRX_SBUS
-#define SERIALRX_UART           SERIAL_PORT_USART1
+#define SERIALRX_PROVIDER       SERIALRX_CRSF
+#define SERIALRX_UART           SERIAL_PORT_USART2
 
 // *************** OSD *****************************
+#define USE_SPI_DEVICE_1
+#define SPI1_SCK_PIN            PA5
+#define SPI1_MISO_PIN           PA6
+#define SPI1_MOSI_PIN           PA7
+
 #define USE_MAX7456
 #define MAX7456_SPI_INSTANCE    SPI1
 #define MAX7456_SPI_CS_PIN      PB10
 
 // *************** ADC *****************************
-
 #define USE_ADC
-#define DEFAULT_VOLTAGE_METER_SOURCE                     VOLTAGE_METER_ADC
-#define DEFAULT_CURRENT_METER_SOURCE                     CURRENT_METER_ADC
-#define CURRENT_METER_ADC_PIN                            PA4
-#define VBAT_ADC_PIN                                     PB1
+#define ADC_INSTANCE            ADC1  // Default added
+#define ADC1_DMA_OPT            0  // DMA 2 Stream 0 Channel 0
+
+#define VBAT_ADC_PIN            PB1
+#define CURRENT_METER_ADC_PIN   PA4
 
 
-
-#define DEFAULT_FEATURES                (FEATURE_OSD | FEATURE_TELEMETRY | FEATURE_SOFTSERIAL)
-
+#define DEFAULT_FEATURES                (FEATURE_OSD | FEATURE_TELEMETRY )
+#define DEFAULT_VOLTAGE_METER_SOURCE    VOLTAGE_METER_ADC
+#define DEFAULT_CURRENT_METER_SOURCE    CURRENT_METER_ADC
 
 #define TARGET_IO_PORTA         0xffff
 #define TARGET_IO_PORTB         0xffff
