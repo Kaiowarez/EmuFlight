@@ -22,13 +22,12 @@
 
 #define TARGET_BOARD_IDENTIFIER "ZEEZWHOOP"
 #define USBD_PRODUCT_STRING     "ZeezWhoopF4"
+
 #define LED0_PIN                PC13
 
 #define ENABLE_DSHOT_DMAR       true
 
-#define DSHOT_BITBANG_DEFAULT   DSHOT_BITBANG_OFF
-
- // *************** Gyro & ACC **********************
+// *************** Gyro & ACC **********************
 #define USE_SPI
 #define USE_SPI_DEVICE_3
 
@@ -49,8 +48,10 @@
 #define GYRO_MPU6000_ALIGN      CW90_DEG
 #define USE_ACC
 #define USE_ACC_SPI_MPU6000
+#define ACC_MPU6000_ALIGN       CW90_DEG
 
 #define USE_I2C
+
 #define USE_I2C_DEVICE_1
 #define I2C_DEVICE              (I2CDEV_1)
 #define I2C1_SCL                PB8        // SCL pad
@@ -85,12 +86,11 @@
 
 // *************** ADC *****************************
 #define USE_ADC
-#define ADC_INSTANCE            ADC1  // Default added
+#define ADC_INSTANCE         ADC1  // Default added
 #define ADC1_DMA_OPT            0  // DMA 2 Stream 0 Channel 0
 
 #define VBAT_ADC_PIN            PB1
 #define CURRENT_METER_ADC_PIN   PA4
-
 
 #define DEFAULT_FEATURES                (FEATURE_OSD | FEATURE_TELEMETRY )
 #define DEFAULT_VOLTAGE_METER_SOURCE    VOLTAGE_METER_ADC
@@ -101,5 +101,5 @@
 #define TARGET_IO_PORTC         0xffff
 #define TARGET_IO_PORTD         (BIT(2))
 
-#define USABLE_TIMER_CHANNEL_COUNT 6
-#define USED_TIMERS             ( TIM_N(1)|TIM_N(2)|TIM_N(4)|TIM_N(9) )
+#define USABLE_TIMER_CHANNEL_COUNT 10
+#define USED_TIMERS             ( TIM_N(1)|TIM_N(2)|TIM_N(3)|TIM_N(4)|TIM_N(5)|TIM_N(9) )
