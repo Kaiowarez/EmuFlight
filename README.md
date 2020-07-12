@@ -45,9 +45,13 @@ Etiquette: Don't ask to ask and please wait around long enough for a reply - som
 
 ## Configuration Tool
 
-To configure Betaflight you should use the Betaflight-configurator GUI tool (Windows/OSX/Linux) which can be found here:
+To configure EmuFlight you should use the EmuFlight-configurator GUI tool (Windows/OSX/Linux) which can be found here:
 
 https://github.com/emuflight/EmuConfigurator
+
+## DJI OSD [In]Compatibility
+
+Setting PIDs and Rates (except for Feed Forward) is supported with the DJI OSD. The filtering menus (MISC PP, FILT PP, FILT GLB) are not currently supported and may result in unintended filtering settings.
 
 ## Contributing
 

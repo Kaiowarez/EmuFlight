@@ -8,6 +8,9 @@
 # install crosscompiler toolchain
 make arm_sdk_install
 
+# increase the limit in order to remove Argument list too long errors
+ulimit -s 131072
+
 # compile code to binaries
 make ${GOAL} || exit $?
 
@@ -17,7 +20,7 @@ make ${GOAL} || exit $?
 export EMU_VERSION="$(make version)"
 
 # compose string to reference the artifacts (binaries)
-export PACKAGE_VERSION="${TRAVIS_BUILD_NUMBER}-${EMU_VERSION}-${TRAVIS_BRANCH}"
+export PACKAGE_VERSION="Travis_Build_${TRAVIS_BUILD_NUMBER}_${EMU_VERSION}_${TRAVIS_BRANCH}"
 
 # process template for pushing to bintray
 j2 bintray-template.j2 -o bintray-conf.json
