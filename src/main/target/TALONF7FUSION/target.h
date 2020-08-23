@@ -19,7 +19,7 @@
  */
 
 #pragma once
-#define TARGET_BOARD_IDENTIFIER "TALN"
+#define TARGET_BOARD_IDENTIFIER "HENA"
 #define USBD_PRODUCT_STRING "TALONF7FUSION"
 
 #define USE_TARGET_CONFIG
@@ -31,6 +31,7 @@
 #define USE_PINIOBOX
 
 #define LED0_PIN                PB0
+
 #define USE_BEEPER
 #define BEEPER_PIN              PB4
 #define BEEPER_INVERTED
@@ -64,6 +65,7 @@
 #define GYRO_2_ALIGN                 GYRO_MPU6500_2_ALIGN
 #define ACC_1_ALIGN                  ACC_MPU6500_1_ALIGN
 #define ACC_2_ALIGN                  ACC_MPU6500_2_ALIGN
+
 #define GYRO_CONFIG_USE_GYRO_DEFAULT GYRO_CONFIG_USE_GYRO_BOTH
 
 #define USE_MAX7456
@@ -107,26 +109,26 @@
 //#define USE_SOFTSERIAL1
 #define SERIAL_PORT_COUNT       7 //VCP, USART1, USART2,USART3,USART4,USART5,USART6
 
-#define USE_ESCSERIAL
+/*#define USE_ESCSERIAL
 #define ESCSERIAL_TIMER_TX_PIN  PB8 // (Hardware=0, PPM)
-
+*/
 
 #define USE_SPI
 #define USE_SPI_DEVICE_1
 #define USE_SPI_DEVICE_2
 #define USE_SPI_DEVICE_3
 
-#define SPI1_NSS_PIN             PA4
+//#define SPI1_NSS_PIN             PA4
 #define SPI1_SCK_PIN             PA5
 #define SPI1_MISO_PIN            PA6
 #define SPI1_MOSI_PIN            PA7
 
-#define SPI2_NSS_PIN             PB12
+//#define SPI2_NSS_PIN             PB12
 #define SPI2_SCK_PIN             PB13
 #define SPI2_MISO_PIN            PB14
 #define SPI2_MOSI_PIN            PB15
 
-#define SPI3_NSS_PIN             PA15
+//#define SPI3_NSS_PIN             PA15
 #define SPI3_SCK_PIN             PC10
 #define SPI3_MISO_PIN            PC11
 #define SPI3_MOSI_PIN            PB5
@@ -137,7 +139,8 @@
 #define CURRENT_METER_ADC_PIN   PC1
 #define VBAT_ADC_PIN            PC2
 #define RSSI_ADC_PIN            PC3
-#define CURRENT_METER_SCALE_DEFAULT 250                     // 3.3/120A  = 25mv/A
+#define CURRENT_METER_SCALE_DEFAULT 150                     // 3.3/120A  = 25mv/A
+#define VBAT_SCALE              160                    //configurator tab voltage scale
 
 #define BINDPLUG_PIN            PB2
 #define DEFAULT_RX_FEATURE      FEATURE_RX_SERIAL
@@ -149,5 +152,5 @@
 #define TARGET_IO_PORTC         0xffff
 #define TARGET_IO_PORTD         (BIT(2))
 
-#define USABLE_TIMER_CHANNEL_COUNT      6
-#define USED_TIMERS             ( TIM_N(2) | TIM_N(3) | TIM_N(4) | TIM_N(8)   )
+#define USABLE_TIMER_CHANNEL_COUNT      9
+#define USED_TIMERS             ( TIM_N(2) | TIM_N(3) | TIM_N(4) | TIM_N(5) | TIM_N(8)   )
