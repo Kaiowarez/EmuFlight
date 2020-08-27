@@ -22,7 +22,7 @@
 
 #define USE_TARGET_CONFIG
 
-#define TARGET_BOARD_IDENTIFIER "S7X2"
+#define TARGET_BOARD_IDENTIFIER "HGLR"
 #define USBD_PRODUCT_STRING  "HGLRCF722"
 
 #define ENABLE_DSHOT_DMAR       true
@@ -42,38 +42,18 @@
 #define SPI1_MISO_PIN           PA6
 #define SPI1_MOSI_PIN           PA7
 
-#define USE_DUAL_GYRO
-#define USE_EXTI
-#define GYRO_1_EXTI_PIN         PC4
-#define GYRO_2_EXTI_PIN         PC3
-#define MPU_INT_EXTI
-
-#define GYRO_1_CS_PIN           PB2
-#define GYRO_1_SPI_INSTANCE     SPI1
-#define GYRO_2_CS_PIN           PC15
-#define GYRO_2_SPI_INSTANCE     SPI1
-
 #define USE_GYRO
-#define USE_GYRO_SPI_MPU6000
-#define USE_GYRO_SPI_MPU6500
-
 #define USE_ACC
 #define USE_ACC_SPI_MPU6000
-#define USE_ACC_SPI_MPU6500
-
-#define GYRO_MPU6000_1_ALIGN    CW180_DEG_FLIP
-#define ACC_MPU6000_1_ALIGN     CW180_DEG_FLIP
-#define GYRO_1_ALIGN            GYRO_MPU6000_1_ALIGN
-#define ACC_1_ALIGN             ACC_MPU6000_1_ALIGN
-
-#define GYRO_MPU6500_2_ALIGN    CW90_DEG
-#define ACC_MPU6500_2_ALIGN     CW90_DEG
-#define GYRO_2_ALIGN            GYRO_MPU6500_2_ALIGN
-#define ACC_2_ALIGN             ACC_MPU6500_2_ALIGN
-
+#define USE_GYRO_SPI_MPU6000
+#define USE_EXTI
 #define USE_MPU_DATA_READY_SIGNAL
-#define ENSURE_MPU_DATA_READY_IS_LOW
-#define GYRO_CONFIG_USE_GYRO_DEFAULT GYRO_CONFIG_USE_GYRO_1
+
+#define MPU_INT_EXTI                                     PC4                    //MPU_INT_EXTI
+#define MPU6000_CS_PIN                                   PB2                    //GYRO_1_CS_PIN
+#define MPU6000_SPI_INSTANCE                             SPI1
+#define GYRO_MPU6000_ALIGN    CW180_DEG_FLIP
+#define ACC_MPU6000_ALIGN     CW180_DEG_FLIP
 
 // *************** I2C /Baro/Mag *********************
 
@@ -125,8 +105,8 @@
 // *************** UART *****************************
 
 #define USE_VCP
-#define USB_DETECT_PIN          PC14
 #define USE_USB_DETECT
+#define USB_DETECT_PIN          PC14
 
 #define USE_UART1
 #define UART1_TX_PIN            PA9
@@ -148,17 +128,20 @@
 #define UART6_TX_PIN            PC6
 #define UART6_RX_PIN            PC7
 
-#define USE_SOFTSERIAL1
+//#define USE_SOFTSERIAL1
 
-#define SERIAL_PORT_COUNT       7
+#define SERIAL_PORT_COUNT       6
 
 #define DEFAULT_RX_FEATURE      FEATURE_RX_SERIAL
 #define SERIALRX_PROVIDER       SERIALRX_SBUS
 #define SERIALRX_UART           SERIAL_PORT_USART2
 
 // *************** ADC *****************************
+//#define USE_ESCSERIAL
 #define USE_ADC
-#define ADC1_DMA_STREAM         DMA2_Stream0
+//#define ADC_INSTANCE         ADC1
+//#define ADC1_DMA_OPT            0  // DMA 2 Stream 0 Channel 0
+//#define ADC1_DMA_STREAM         DMA2_Stream0
 #define VBAT_ADC_PIN            PC2
 #define CURRENT_METER_ADC_PIN   PC1
 #define RSSI_ADC_PIN            PC0
@@ -174,8 +157,6 @@
 #define DEFAULT_VOLTAGE_METER_SOURCE VOLTAGE_METER_ADC
 #define DEFAULT_CURRENT_METER_SOURCE CURRENT_METER_ADC
 #define CURRENT_METER_SCALE_DEFAULT 179
-
-#define USE_ESCSERIAL
 
 #define TARGET_IO_PORTA 0xffff
 #define TARGET_IO_PORTB 0xffff
