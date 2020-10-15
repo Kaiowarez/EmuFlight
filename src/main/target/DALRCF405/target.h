@@ -49,6 +49,10 @@
 #define USE_GYRO
 #define USE_ACC
 //------ICM20689
+<<<<<<< Updated upstream
+=======
+/*
+>>>>>>> Stashed changes
 #define ICM20689_CS_PIN          PA4
 #define ICM20689_SPI_INSTANCE    SPI1
 
@@ -57,6 +61,7 @@
 
 #define USE_ACC_SPI_ICM20689
 #define ACC_ICM20689_ALIGN       CW90_DEG
+*/
 //------MPU6000
 #define MPU6000_CS_PIN           PA4
 #define MPU6000_SPI_INSTANCE     SPI1
@@ -73,11 +78,21 @@
 #define I2C_DEVICE              (I2CDEV_1)
 #define I2C1_SCL                PB8
 #define I2C1_SDA                PB9
+<<<<<<< Updated upstream
+=======
 
+#define BARO_I2C_INSTANCE       (I2CDEV_1)
+#define USE_BARO
+#define USE_BARO_BMP280
+#define USE_BARO_MS5611
+#define USE_BARO_BMP085
+>>>>>>> Stashed changes
+
+#define MAG_I2C_INSTANCE        (I2CDEV_1)
 #define USE_MAG
-#define USE_MAG_AK8975
 #define USE_MAG_HMC5883
 #define USE_MAG_QMC5883
+#define USE_MAG_AK8975
 
 //ON BOARD FLASH -----------------------------------
 #define USE_SPI_DEVICE_2
@@ -159,6 +174,3 @@
 
 #define USABLE_TIMER_CHANNEL_COUNT 11
 #define USED_TIMERS             (TIM_N(1)|TIM_N(2)|TIM_N(3)|TIM_N(4)|TIM_N(8)|TIM_N(12))
-
-
-
