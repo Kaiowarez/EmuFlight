@@ -49,8 +49,6 @@
 #define USE_GYRO
 #define USE_ACC
 //------ICM20689
-<<<<<<< Updated upstream
-=======
 /*
 >>>>>>> Stashed changes
 #define ICM20689_CS_PIN          PA4
@@ -78,15 +76,12 @@
 #define I2C_DEVICE              (I2CDEV_1)
 #define I2C1_SCL                PB8
 #define I2C1_SDA                PB9
-<<<<<<< Updated upstream
-=======
 
 #define BARO_I2C_INSTANCE       (I2CDEV_1)
 #define USE_BARO
 #define USE_BARO_BMP280
 #define USE_BARO_MS5611
 #define USE_BARO_BMP085
->>>>>>> Stashed changes
 
 #define MAG_I2C_INSTANCE        (I2CDEV_1)
 #define USE_MAG

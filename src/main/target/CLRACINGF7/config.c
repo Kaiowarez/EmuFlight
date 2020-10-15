@@ -52,6 +52,5 @@ void targetConfiguration(void)
 
     pinioBoxConfigMutable()->permanentId[0] = 40;
 
->>>>>>> Stashed changes
 }
 #endif
