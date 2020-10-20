@@ -22,7 +22,6 @@
 #define TARGET_BOARD_IDENTIFIER "CLR7"
 #define USBD_PRODUCT_STRING "CLRACINGF7"
 
-#define ENABLE_DSHOT_DMAR       true
 #define USE_TARGET_CONFIG
 
 #define ENABLE_DSHOT_DMAR                                true

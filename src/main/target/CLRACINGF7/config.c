@@ -17,24 +17,7 @@
  *
  * If not, see <http://www.gnu.org/licenses/>.
  */
-/*
-#include <stdbool.h>
-#include <stdint.h>
-#include "platform.h"
-#ifdef USE_TARGET_CONFIG
-#include "pg/pinio.h"
-#include "pg/piniobox.h"
 
-<<<<<<< Updated upstream
-void targetConfiguration(void) {
-    pinioBoxConfigMutable()->permanentId[0] = 39;
-=======
-void targetConfiguration(void)
-{
-    pinioBoxConfigMutable()->permanentId[0] = 40,255,255,255;
-}
-#endif
-*/
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
