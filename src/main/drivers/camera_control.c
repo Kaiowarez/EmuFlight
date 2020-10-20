@@ -72,6 +72,7 @@ PG_RESET_TEMPLATE(cameraControlConfig_t, cameraControlConfig,
                   .internalResistance = 470,
                   .ioTag = IO_TAG(CAMERA_CONTROL_PIN),
                   .inverted = 0,   // Output is inverted externally
+                  .buttonResistanceValues[CAMERA_CONTROL_KEY_ENTER] = 450,
                   .buttonResistanceValues[CAMERA_CONTROL_KEY_LEFT]  = 270,
                   .buttonResistanceValues[CAMERA_CONTROL_KEY_UP]    = 150,
                   .buttonResistanceValues[CAMERA_CONTROL_KEY_RIGHT] = 68,
