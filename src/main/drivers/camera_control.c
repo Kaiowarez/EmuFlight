@@ -72,8 +72,11 @@ PG_RESET_TEMPLATE(cameraControlConfig_t, cameraControlConfig,
                   .internalResistance = 470,
                   .ioTag = IO_TAG(CAMERA_CONTROL_PIN),
                   .inverted = 0,   // Output is inverted externally
-                 );
-
+                  .buttonResistanceValues[CAMERA_CONTROL_KEY_LEFT]  = 270,
+                  .buttonResistanceValues[CAMERA_CONTROL_KEY_UP]    = 150,
+                  .buttonResistanceValues[CAMERA_CONTROL_KEY_RIGHT] = 68,
+                  .buttonResistanceValues[CAMERA_CONTROL_KEY_DOWN]  = 0,
+                );
 static struct {
     bool enabled;
     IO_t io;
@@ -167,10 +170,11 @@ void cameraControlProcess(uint32_t currentTimeUs) {
     }
 }
 
-static const int buttonResistanceValues[] = { 45000, 27000, 15000, 6810, 0 };
+//static const int buttonResistanceValues[] = { 45000, 27000, 15000, 6810, 0 };
 
-static float calculateKeyPressVoltage(const cameraControlKey_e key) {
-    const int buttonResistance = buttonResistanceValues[key];
+static float calculateKeyPressVoltage(const cameraControlKey_e key)
+{
+    const int buttonResistance = cameraControlConfig()->buttonResistanceValues[key] * 100;
     return 1.0e-2f * cameraControlConfig()->refVoltage * buttonResistance / (100 * cameraControlConfig()->internalResistance + buttonResistance);
 }
 

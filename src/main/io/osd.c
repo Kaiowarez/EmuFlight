@@ -209,7 +209,8 @@ static const uint8_t osdElementDisplayOrder[] = {
     OSD_DISARMED,
     OSD_NUMERICAL_HEADING,
     OSD_NUMERICAL_VARIO,
-    OSD_COMPASS_BAR
+    OSD_COMPASS_BAR,
+    OSD_G_FORCE
 };
 
 PG_REGISTER_WITH_RESET_FN(osdConfig_t, osdConfig, PG_OSD_CONFIG, 3);
