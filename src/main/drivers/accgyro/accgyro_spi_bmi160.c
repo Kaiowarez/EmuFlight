@@ -37,6 +37,7 @@
 
 #include "platform.h"
 
+#ifdef USE_ACCGYRO_BMI160
 
 #include "drivers/bus_spi.h"
 #include "drivers/exti.h"
@@ -47,17 +48,6 @@
 
 #include "accgyro.h"
 #include "accgyro_spi_bmi160.h"
-
-#ifdef USE_ACCGYRO_BMI160
-#if defined(USE_CHIBIOS)
-#include "ch.h"
-binary_semaphore_t gyroSem;
-#endif
-
-#if defined(BRAINFPV)
-#include "fc/config.h"
-#include "brainfpv/brainfpv_osd.h"
-#endif
 
 
 /* BMI160 Registers */
@@ -99,7 +89,7 @@ static volatile bool bmi160ExtiInitDone = false;
 
 //! Private functions
 static int32_t BMI160_Config(const busDevice_t *bus);
-static int16_t BMI160_do_foc(const busDevice_t *bus);
+static int32_t BMI160_do_foc(const busDevice_t *bus);
 
 uint8_t bmi160Detect(const busDevice_t *bus)
 {
@@ -144,19 +134,12 @@ static void BMI160_Init(const busDevice_t *bus)
         return;
     }
 
-#if defined(USE_CHIBIOS)
-    chBSemObjectInit(&gyroSem, FALSE);
-#endif
+    bool do_foc = false;
 
-#ifdef BRAINFPV
     /* Perform fast offset compensation if requested */
-    if (bfOsdConfig()->bmi160foc) {
-        int16_t foc_ret = BMI160_do_foc(bus);
-        bfOsdConfigMutable()->bmi160foc = false;
-        bfOsdConfigMutable()->bmi160foc_ret = foc_ret;
-        writeEEPROM();
+    if (do_foc) {
+        BMI160_do_foc(bus);
     }
-#endif
 
     BMI160InitDone = true;
 }
@@ -215,7 +198,7 @@ static int32_t BMI160_Config(const busDevice_t *bus)
     return 0;
 }
 
-static int16_t BMI160_do_foc(const busDevice_t *bus)
+static int32_t BMI160_do_foc(const busDevice_t *bus)
 {
     // assume sensor is mounted on top
     uint8_t val = 0x7D;;
@@ -225,7 +208,7 @@ static int16_t BMI160_do_foc(const busDevice_t *bus)
     spiBusWriteRegister(bus, BMI160_REG_CMD, BMI160_CMD_START_FOC);
 
     // Wait for FOC to complete
-    for (int i=0; i<200; i++) {
+    for (int i=0; i<50; i++) {
         val = spiBusReadRegister(bus, BMI160_REG_STATUS);
         if (val & BMI160_REG_STATUS_FOC_RDY) {
             break;
@@ -259,26 +242,11 @@ static int16_t BMI160_do_foc(const busDevice_t *bus)
 
 extiCallbackRec_t bmi160IntCallbackRec;
 
-#if defined(USE_CHIBIOS)
-void bmi160ExtiHandler(extiCallbackRec_t *cb)
-{
-    CH_IRQ_PROLOGUE();
-
-    gyroDev_t *gyro = container_of(cb, gyroDev_t, exti);
-    gyro->dataReady = true;
-
-    chSysLockFromISR();
-    chBSemSignalI(&gyroSem);
-    chSysUnlockFromISR();
-    CH_IRQ_EPILOGUE();
-}
-#else
 void bmi160ExtiHandler(extiCallbackRec_t *cb)
 {
     gyroDev_t *gyro = container_of(cb, gyroDev_t, exti);
     gyro->dataReady = true;
 }
-#endif
 
 static void bmi160IntExtiInit(gyroDev_t *gyro)
 {
