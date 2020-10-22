@@ -40,12 +40,6 @@
 #define SPI1_MISO_PIN           PA6
 #define SPI1_MOSI_PIN           PA7
 
-#define MPU6000_CS_PIN          PA4
-#define MPU6000_SPI_INSTANCE    SPI1
-
-#define MPU6500_CS_PIN          PA4
-#define MPU6500_SPI_INSTANCE    SPI1
-
 #define USE_EXTI
 #define MPU_INT_EXTI            PA1
 #define USE_MPU_DATA_READY_SIGNAL
@@ -57,11 +51,16 @@
 #define USE_ACC_SPI_MPU6000
 #define ACC_MPU6000_ALIGN       CW180_DEG
 
+#define MPU6000_CS_PIN          PA4
+#define MPU6000_SPI_INSTANCE    SPI1
+/*
+#define MPU6500_CS_PIN          PA4
+#define MPU6500_SPI_INSTANCE    SPI1
 #define USE_GYRO_SPI_MPU6500
 #define GYRO_MPU6500_ALIGN      CW180_DEG
 #define USE_ACC_SPI_MPU6500
 #define ACC_MPU6500_ALIGN       CW180_DEG
-
+*/
 // *************** Baro **************************
 #define USE_I2C
 
@@ -121,7 +120,7 @@
 
 #define USE_ESCSERIAL
 
-#define CAMERA_CONTROL_PIN  PB6
+#define CAMERA_CONTROL_PIN    PA1
 
 #define USE_PINIO
 #define USE_PINIOBOX
@@ -139,4 +138,3 @@
 
 #define USABLE_TIMER_CHANNEL_COUNT 10
 #define USED_TIMERS             ( TIM_N(1)|TIM_N(2)|TIM_N(3)|TIM_N(4)|TIM_N(5)|TIM_N(9)|TIM_N(11) )
-
