@@ -259,8 +259,13 @@ void fcTasksInit(void) {
     setTaskEnabled(TASK_OSD_SLAVE, osdSlaveInitialized());
 #else
     if (sensors(SENSOR_GYRO)) {
-        rescheduleTask(TASK_GYROPID, gyro.targetLooptime);
-        setTaskEnabled(TASK_GYROPID, true);
+      #ifdef NBD_USE_BMI160
+        // Set the task period below the actual looptime, as the gyro interrupt kicks-off the scheduler
+          rescheduleTask(TASK_GYROPID, gyro.targetLooptime - 10);
+        #else
+          rescheduleTask(TASK_GYROPID, gyro.targetLooptime);
+        #endif
+          setTaskEnabled(TASK_GYROPID, true);
     }
     if (sensors(SENSOR_ACC)) {
         setTaskEnabled(TASK_ACCEL, true);
