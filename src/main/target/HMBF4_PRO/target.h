@@ -55,7 +55,7 @@
 #define USE_MSP_UART
 
 // *************** Gyro & ACC **********************
-//#define NBD_USE_BMI160
+#define NBD_USE_BMI160
 #define USE_GYRO
 #define USE_ACC
 #define USE_SPI_GYRO
@@ -63,7 +63,6 @@
 #define USE_GYRO_SPI_BMI160
 #define USE_ACC_SPI_BMI160
 #define USE_MPU_DATA_READY_SIGNAL
-
 
 #define GYRO_BMI160_ALIGN    CW0_DEG
 #define ACC_BMI160_ALIGN     CW0_DEG
