@@ -54,7 +54,7 @@
 #include "cms/cms_menu_vtx_rtc6705.h"
 #include "cms/cms_menu_vtx_smartaudio.h"
 #include "cms/cms_menu_vtx_tramp.h"
-
+#include "cms/cms_menu_vtx_beesign.h"
 
 // Info
 
@@ -113,6 +113,9 @@ static OSD_Entry menuFeaturesEntries[] = {
 #if defined(USE_VTX_TRAMP)
     {"VTX TR", OME_Submenu, cmsMenuChange, &cmsx_menuVtxTramp, 0},
 #endif
+#if defined(USE_VTX_BEESIGN)
+    {"VTX BS", OME_Submenu, cmsMenuChange, &cmsx_menuVtxBeesign, 0},
+#endif // VTX_BEESIGN
 #endif // VTX_CONTROL
 #ifdef USE_LED_STRIP
     {"LED STRIP", OME_Submenu, cmsMenuChange, &cmsx_menuLedstrip, 0},

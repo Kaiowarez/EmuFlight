@@ -51,7 +51,7 @@
 
 #endif
 
-#if defined(USE_VTX_SMARTAUDIO) || defined(USE_VTX_TRAMP)
+#if defined(USE_VTX_SMARTAUDIO) || defined(USE_VTX_TRAMP) || defined(USE_VTX_BEESIGN)
 
 #define VTX_SETTINGS_POWER_COUNT        5
 #define VTX_SETTINGS_DEFAULT_POWER      1
@@ -109,6 +109,12 @@ typedef enum {
 #define VTX_TRAMP_POWER_400       4
 #define VTX_TRAMP_POWER_600       5
 
+#define VTX_BS_POWER_OFF         0
+#define VTX_BS_POWER_25          1
+#define VTX_BS_POWER_100         2
+#define VTX_BS_POWER_200         3
+#define VTX_BS_POWER_400         4
+#define VTX_BS_POWER_600         5
 
 typedef struct vtxDeviceCapability_s {
     uint8_t bandCount;
