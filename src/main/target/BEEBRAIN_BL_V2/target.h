@@ -55,7 +55,7 @@
 #define USE_MSP_UART
 
 // *************** Gyro & ACC **********************
-//#define NBD_USE_BMI160
+#define NBD_USE_BMI160
 #define USE_EXTI
 #define USE_GYRO_EXTI
 #define USE_MPU_DATA_READY_SIGNAL
