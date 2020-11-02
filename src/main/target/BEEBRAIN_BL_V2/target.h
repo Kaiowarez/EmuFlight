@@ -20,8 +20,8 @@
 
 #pragma once
 
-#define TARGET_BOARD_IDENTIFIER         "BeeBrain BL V2" // BeeBrain BL
-#define USBD_PRODUCT_STRING             "BeeBrain BL V2"
+#define TARGET_BOARD_IDENTIFIER  "BeeBrain BL V2" // BeeBrain BL
+#define USBD_PRODUCT_STRING      "BeeBrain BL V2"
 
 //#define USE_TARGET_CONFIG
 
@@ -84,12 +84,12 @@
 #define USE_RX_SPI
 #define RX_SPI_INSTANCE                 SPI2
 #define RX_NSS_PIN                      SPI2_NSS_PIN
-#define RX_CC2500_SPI_LED_PIN                  PA13
+#define RX_CC2500_SPI_LED_PIN           PA13
 #define RX_CC2500_SPI_ANT_SEL_PIN       PA7
 #define RX_SPI_BIND_PIN                 PC15
 #define DEFAULT_RX_FEATURE              FEATURE_RX_SPI
 #define RX_SPI_DEFAULT_PROTOCOL         RX_SPI_FRSKY_D
-#define RX_CC2500_SPI_GDO_0_PIN                 PB2
+#define RX_CC2500_SPI_GDO_0_PIN         PB2
 #define RX_CC2500_SPI_TX_EN_PIN         PB10
 #define RX_CC2500_SPI_LNA_EN_PIN        NONE
 #define USE_RX_FRSKY_SPI_TELEMETRY
@@ -119,7 +119,7 @@
 #define VBAT_ADC_PIN                    PB1
 #define CURRENT_METER_ADC_PIN           PA5
 
-#define VBAT_SCALE_DEFAULT              110
+#define VBAT_SCALE                      110
 #define CURRENT_METER_SCALE_DEFAULT     510
 
 #define DEFAULT_VOLTAGE_METER_SOURCE    VOLTAGE_METER_ADC
