@@ -57,7 +57,6 @@
 // *************** Gyro & ACC **********************
 //#define NBD_USE_BMI160
 #define USE_EXTI
-#define USE_GYRO_EXTI
 #define USE_MPU_DATA_READY_SIGNAL
 #define USE_GYRO
 #define USE_ACC
