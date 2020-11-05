@@ -55,7 +55,7 @@
 #define USE_MSP_UART
 
 // *************** Gyro & ACC **********************
-#define NBD_USE_BMI160
+//#define NBD_USE_BMI160
 #define USE_EXTI
 #define USE_GYRO_EXTI
 #define USE_MPU_DATA_READY_SIGNAL
@@ -66,7 +66,6 @@
 #define USE_GYRO_SPI_BMI160
 #define USE_ACC_SPI_BMI160
 #define USE_MPU_DATA_READY_SIGNAL
-
 
 #define GYRO_BMI160_ALIGN    CW0_DEG
 #define ACC_BMI160_ALIGN     CW0_DEG
@@ -91,7 +90,7 @@
 #define RX_SPI_DEFAULT_PROTOCOL         RX_SPI_FRSKY_D
 #define RX_CC2500_SPI_GDO_0_PIN         PB2
 #define RX_CC2500_SPI_TX_EN_PIN         PB10
-#define RX_CC2500_SPI_LNA_EN_PIN        NONE
+//#define RX_CC2500_SPI_LNA_EN_PIN        NONE
 #define USE_RX_FRSKY_SPI_TELEMETRY
 #define USE_RX_CC2500_SPI_DIVERSITY
 #define USE_RX_FRSKY_SPI_D
@@ -100,22 +99,22 @@
 
 // *************** OSD *****************************
 #define USE_MAX7456
-#define NBD_MCU_OSD
+// #define NBD_MCU_OSD
 
 #define MAX7456_SPI_INSTANCE            SPI3
 #define MAX7456_SPI_CS_PIN              SPI3_NSS_PIN
 
 // *************** VTX *****************************
 #define USE_VTX_RTC6705
-#undef USE_VTX_SMARTAUDIO
-#undef USE_VTX_TRAMP
+//#undef USE_VTX_SMARTAUDIO
+//#undef USE_VTX_TRAMP
 #define RTC6705_SPI_INSTANCE            SPI3
 #define RTC6705_CS_PIN                  PA14
 
 // *************** ADC *****************************
 #define USE_ADC
 #define ADC_INSTANCE                    ADC1
-#define ADC1_DMA_OPT                    0
+//#define ADC1_DMA_OPT                    0
 #define VBAT_ADC_PIN                    PB1
 #define CURRENT_METER_ADC_PIN           PA5
 
