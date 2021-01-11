@@ -21,7 +21,7 @@
 #pragma once
 
 #define TARGET_BOARD_IDENTIFIER "BEFH"
-#define USBD_PRODUCT_STRING     "BETAFPVF411RX"
+#define USBD_PRODUCT_STRING     "BETAFPVF411"
 
 #define USE_TARGET_CONFIG
 
@@ -44,11 +44,6 @@
 #define SPI2_SCK_PIN            PB13
 #define SPI2_MISO_PIN           PB14
 #define SPI2_MOSI_PIN           PB15
-#define USE_SPI_DEVICE_3
-#define SPI3_NSS_PIN            PA15
-#define SPI3_SCK_PIN            PB3
-#define SPI3_MISO_PIN           PB4
-#define SPI3_MOSI_PIN           PB5
 
 //GYRO
 #define MPU6000_CS_PIN          PA4
@@ -60,10 +55,10 @@
 
 #define USE_GYRO
 #define USE_GYRO_SPI_MPU6000
-#define GYRO_MPU6000_ALIGN      CW180_DEG
+#define GYRO_MPU6000_ALIGN      CW0_DEG_FLIP
 #define USE_ACC
 #define USE_ACC_SPI_MPU6000
-#define ACC_MPU6000_ALIGN       CW180_DEG
+#define ACC_MPU6000_ALIGN       CW0_DEG_FLIP
 
 // *************** UART *****************************
 #define USE_VCP
@@ -88,32 +83,6 @@
 #define MAX7456_SPI_CS_PIN      PB12
 
 //RX
-#define RX_SCK_PIN                    SPI3_SCK_PIN
-#define RX_MISO_PIN                   SPI3_MISO_PIN
-#define RX_MOSI_PIN                   SPI3_MOSI_PIN
-#define RX_NSS_PIN                    SPI3_NSS_PIN
-#define RX_NSS_GPIO_CLK_PERIPHERAL    RCC_APB2Periph_GPIOA
-
-#define USE_RX_SPI
-#define RX_SPI_INSTANCE               SPI3
-#define RX_CC2500_SPI_DISABLE_CHIP_DETECTION
-#define RX_CC2500_SPI_GDO_0_PIN       PC13
-#define RX_CC2500_SPI_LED_PIN         PC15
-#define RX_CC2500_SPI_LED_PIN_INVERTED
-#define RX_FRSKY_SPI_LED_PIN_INVERTED
-#define USE_RX_CC2500_SPI_PA_LNA
-#define RX_CC2500_SPI_TX_EN_PIN       PB9
-#define RX_CC2500_SPI_LNA_EN_PIN      PA13
-#define USE_RX_CC2500_SPI_DIVERSITY
-#define RX_CC2500_SPI_ANT_SEL_PIN     PA14
-#define BINDPLUG_PIN                  PB2
-#define USE_RX_FRSKY_SPI_D
-#define USE_RX_FRSKY_SPI_X
-#define USE_RX_SFHSS_SPI
-#define DEFAULT_RX_FEATURE            FEATURE_RX_SPI
-#define RX_SPI_DEFAULT_PROTOCOL       RX_SPI_FRSKY_X
-#define USE_RX_FRSKY_SPI_TELEMETRY
-
 // *************** ADC *****************************
 #define USE_ADC
 #define ADC1_DMA_STREAM         DMA2_Stream0
