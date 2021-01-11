@@ -60,10 +60,10 @@
 
 #define USE_GYRO
 #define USE_GYRO_SPI_MPU6000
-#define GYRO_MPU6000_ALIGN      CW0_DEG_FLIP
+#define GYRO_MPU6000_ALIGN      CW180_DEG
 #define USE_ACC
 #define USE_ACC_SPI_MPU6000
-#define ACC_MPU6000_ALIGN       CW0_DEG_FLIP
+#define ACC_MPU6000_ALIGN       CW180_DEG
 
 // *************** UART *****************************
 #define USE_VCP
@@ -119,6 +119,7 @@
 #define ADC1_DMA_STREAM         DMA2_Stream0
 #define VBAT_ADC_PIN            PA1
 #define CURRENT_METER_ADC_PIN   PB0
+#define CURRENT_METER_SCALE_DEFAULT   179
 
 #define DEFAULT_FEATURES                (FEATURE_OSD | FEATURE_TELEMETRY | FEATURE_SOFTSERIAL)
 #define DEFAULT_VOLTAGE_METER_SOURCE    VOLTAGE_METER_ADC
