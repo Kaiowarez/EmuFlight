@@ -109,9 +109,9 @@
 //#define USE_SOFTSERIAL1
 #define SERIAL_PORT_COUNT       7 //VCP, USART1, USART2,USART3,USART4,USART5,USART6
 
-#define USE_ESCSERIAL
+/*#define USE_ESCSERIAL
 #define ESCSERIAL_TIMER_TX_PIN  PB8 // (Hardware=0, PPM)
-
+*/
 #define USE_I2C
 #define USE_I2C_DEVICE_2       // External I2C
 #define I2C_DEVICE               (I2CDEV_2)
