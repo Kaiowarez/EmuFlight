@@ -128,6 +128,8 @@
 // ******* FEATURES ********
 #define CAMERA_CONTROL_PIN                              PB3
 #define BINDPLUG_PIN                                    PB2
+#define USE_USB_DETECT
+#define USB_DETECT_PIN                                   PC5
 
 #define DEFAULT_RX_FEATURE                              FEATURE_RX_SERIAL
 #define SERIALRX_PROVIDER                               SERIALRX_SBUS
@@ -138,7 +140,7 @@
 #define TARGET_IO_PORTA                                 0xffff
 #define TARGET_IO_PORTB                                 0xffff
 #define TARGET_IO_PORTC                                 0xffff
-#define TARGET_IO_PORTD                                 (BIT(2))
+#define TARGET_IO_PORTD                                 0xffff
 
 // timers
 #define USABLE_TIMER_CHANNEL_COUNT                      15                       //updated timer count to compensate for Nf Motor 4
