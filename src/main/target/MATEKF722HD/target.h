@@ -89,7 +89,7 @@
 #define USE_SPI_DEVICE_2
 #define SPI2_SCK_PIN            PB13
 #define SPI2_MISO_PIN           PB14
-#define SPI2_MOSI_PIN           PB15
+#define SPI2_MOSI_PIN           PC3
 
 
 // *************** SPI3  BLACKBOX****************
@@ -130,13 +130,10 @@
 #define UART6_TX_PIN            PC6
 #define UART6_RX_PIN            PC7
 
-#define USE_UART10
-#define UART10_TX_PIN           PA2
-
-
 #define USE_SOFTSERIAL1
+//#define SOFTSERIAL1_TX_PIN      PA2
 
-#define SERIAL_PORT_COUNT       9
+#define SERIAL_PORT_COUNT       8
 
 #define DEFAULT_RX_FEATURE      FEATURE_RX_SERIAL
 #define SERIALRX_PROVIDER       SERIALRX_SBUS

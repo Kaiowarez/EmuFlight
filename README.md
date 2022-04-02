@@ -2,23 +2,24 @@
 
 EmuFlight is flight controller software (firmware) used to fly multi-rotor craft.
 
-This fork differs from Baseflight, Cleanflight and Betaflight in that it focuses on flight performance, innovative filtering, leading-edge feature additions, and wide target support.
+This fork differs from Baseflight, Cleanflight and Betaflight in that it focuses on flight performance, innovative filtering, and leading-edge features.
+
+## WARNING
+
+**DJI components bypass Configurator safety-checks. Do not attempt arming while connected to Configurator with LiPo plugged.  Always remove propellers and use a smoke-stopper for extra safety.**
 
 ## News
 
-Currently working on the first official release of EmuFlight. The Pegasus configurator will also be our official configurator in the coming months.
-
-
-To get the latest updates as well as support from us, you can join our discord at <https://discord.gg/gdP9CwE>.
+To get the latest updates as well as support from us, you can join our discord at <https://discord.gg/BWqgBg3>.
 
 ## Features
 
 EmuFlight has some of the following features:
 
 * Multi-color RGB LED strip support (each LED can be a different color using variable length WS2811 Addressable RGB strips - use for Orientation Indicators, Low Battery Warning, Flight Mode Status, Initialization Troubleshooting, etc)
-* DShot (150, 300, 600 and 1200), Multishot, and Oneshot (125 and 42) motor protocol support
+* DShot (150, 300, 600, 1200, 2400, 4800), Multishot, and Oneshot (125 and 42) motor protocol support
 * Blackbox flight recorder logging (to onboard flash or external microSD card where equipped)
-* Support for targets that use the STM32 F7, F4 and F3 processors
+* Support for targets that use the STM32 F7 and F4 processors. F3 Support removed after version 0.1.0
 * PWM, PPM, and Serial (SBus, SumH, SumD, Spektrum 1024/2048, XBus, etc) RX connection with failsafe detection
 * Multiple telemetry protocols (CSRF, FrSky, HoTT smart-port, MSP, etc)
 * RSSI via ADC - Uses ADC to read PWM RSSI signals, tested with FrSky D4R-II, X8R, X4R-SB, & XSR
@@ -39,7 +40,7 @@ See: https://github.com/emuflight/EmuFlight/wiki
 
 There's a dedicated Discord chat channel here:
 
-https://discord.gg/gdP9CwE
+https://discord.gg/BWqgBg3
 
 Etiquette: Don't ask to ask and please wait around long enough for a reply - sometimes people are out flying, asleep or at work and can't answer immediately.
 
@@ -61,18 +62,17 @@ Contributions are welcome and encouraged. You can contribute in many ways:
 * How-To guides - received help? Help others!
 * Bug reporting & fixes.
 * New feature ideas & suggestions.
+* Coding and Pull Requests.
 
-The best place to start is the EmuFlight Discord (registration [here](https://discord.gg/fXPP49e). Next place is the github issue tracker:
+The best place to start is the EmuFlight Discord (https://discord.gg/BWqgBg3). Next place is the github issue tracker:
 
 https://github.com/emuflight/EmuFlight/issues
 
 https://github.com/emuflight/EmuConfigurator/issues
 
-Before creating new issues please check to see if there is an existing one, search first otherwise you waste peoples time when they could be coding instead!
+Before creating new issues please check to see if there is an existing one.
 
-If you want to contribute to our efforts financially, please consider making a donation to us through PayPal (Not yet setup).
-
-If you want to contribute financially on an ongoing basis, you should consider becoming a patron for us on Patreon (Not yet setup).
+If you want to contribute financially on an ongoing basis, you should consider becoming a patron for us on Patreon (https://www.patreon.com/EmuFlight).
 
 ## Developers
 
@@ -81,7 +81,7 @@ Before starting to write code, please read our [development guidelines](docs/dev
 
 ## EmuFlight Releases
 
-[![Build Status](https://travis-ci.org/emuflight/EmuFlight.svg?branch=master)](https://travis-ci.org/emuflight/EmuFlight) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5422b54319254b6f9b6d01464ae9380c)](https://www.codacy.com/gh/emuflight/EmuFlight?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=emuflight/EmuFlight&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5422b54319254b6f9b6d01464ae9380c)](https://www.codacy.com/gh/emuflight/EmuFlight?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=emuflight/EmuFlight&amp;utm_campaign=Badge_Grade)
 
 https://github.com/emuflight/EmuFlight/releases
 

@@ -30,7 +30,7 @@
 #define USE_GYRO
 #define USE_ACC
 
-#define DEFAULT_ATTITUDE_UPDATE_INTERVAL 1000
+#define DEFAULT_ATTITUDE_UPDATE_INTERVAL 400
 #define DEFAULT_ACC_SAMPLE_INTERVAL      1000
 
 #define USE_FAST_SPI_DRIVER
@@ -197,15 +197,11 @@
 
 #define CAMERA_CONTROL_PIN             PB6    // define dedicated camera_osd_control pin
 
-#define IMUF_DEFAULT_PITCH_Q  3000
-#define IMUF_DEFAULT_ROLL_Q   3000
-#define IMUF_DEFAULT_YAW_Q    3000
-#define IMUF_DEFAULT_W        32
 #define IMUF_DEFAULT_LPF_HZ   90.0f
 #define IMUF_DEFAULT_ACC_LPF_HZ   40.0f
 
-#define DEFAULT_PIDS_ROLL   {45, 70, 20, 0}
-#define DEFAULT_PIDS_PITCH  {45, 70, 20, 0}
-#define DEFAULT_PIDS_YAW    {45, 70, 20, 0}
+//#define DEFAULT_PIDS_ROLL   {45, 70, 20, 0}
+//#define DEFAULT_PIDS_PITCH  {45, 70, 20, 0}
+//#define DEFAULT_PIDS_YAW    {45, 70, 5, 0}
 
 #define TARGET_MANUFACTURER_IDENTIFIER "MOD2"
