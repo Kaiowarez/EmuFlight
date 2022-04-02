@@ -141,8 +141,13 @@
 #endif
 
 // Burst dshot to default off if not configured explicitly by target
-#ifndef ENABLE_DSHOT_DMAR
-#define ENABLE_DSHOT_DMAR false
+
+#if defined(ENABLE_DSHOT)
+#define ENABLE_DSHOT_DMAR true
+#else
+#if !defined(ENABLE_DSHOT_DMAR) || !defined(USE_DSHOT)
+    #define ENABLE_DSHOT_DMAR false
+#endif
 #endif
 
 // Some target doesn't define USE_ADC which USE_ADC_INTERNAL depends on
