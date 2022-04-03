@@ -50,6 +50,8 @@
 #define USE_EXTI
 #define MPU_INT_EXTI            PC4
 #define USE_MPU_DATA_READY_SIGNAL
+#define USE_SERIAL_4WAY_BLHELI_INTERFACE
+
 //MPU-6000
 #define USE_ACC
 #define USE_ACC_SPI_MPU6000
